@@ -132,12 +132,22 @@ combinations = [{'default':''}] # init
 if search:
     print(search)
     # create parameter combinations
-    testParams = sorted(search) # give an order to dict (by default unordered)
+    is_combination = True
+    testParams = search.copy() # give an order to dict (by default unordered)
+    if 'combination' in testParams:
+        is_combination = testParams.pop('combination')
+    print(is_combination)
     if len(testParams)>1:
         # create an array of dictionaries:
         # each dict being the joining of one of the testKey and a value testVal
         # each testVal is produced by internal product of all array in testParams
-        combinations = [dict(list(zip(testParams, testVal))) for testVal in it.product(*(search[testKey] for testKey in testParams))]
+        if is_combination:
+            combinations = [dict(list(zip(testParams, testVal))) for testVal in it.product(*(search[testKey] for testKey in testParams))]
+        else :
+            combinations =[]
+            for vals in list(zip(*testParams.values())):
+                testKeys = list(testParams.keys())
+                combinations.append(dict(zip(testKeys,vals)))
     else:
         for testKey in testParams:
             print("testKey",testKey)

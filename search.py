@@ -21,10 +21,11 @@
     # ------------------------------------------------------------------------------
 
     # apply constraints from the literature to reduce the dimensionality of the parameter space
+    'combination' : False,
 
     # 'Injections.py.amplitude' : [ [.8,.0],[1,.0] ],#[ [.15,.0], [.25,.0], [.4,.0] ],
 
-    'Projections.drive_py.weight' : np.arange(.00002, .00012, .00002), # uS # 100*100 *1000 *0.005 = 5000
+    # 'Projections.drive_py.weight' : np.arange(.00002, .00012, .00002), # uS # 100*100 *1000 *0.005 = 5000
 
     #'run_time' : [5000],
     #'Populations.py.n' : [1600],
@@ -35,7 +36,8 @@
     # 'Populations.py.cellparams.v_reset': np.arange(-75., -55., 2.),
     # 'Populations.py.cellparams.a': np.arange(0.01, 0.05, .005),
     # 'Populations.py.cellparams.b': np.arange(0.01, 0.05, .005),
-    # 'Populations.py.cellparams.tau_w': np.arange(80., 100., 10.),
+    'Populations.py.cellparams.tau_w': [ 425.,  450.,  475.,  500.,  525.,  550.],
+    # 'Populations.inh.cellparams.tau_w': [ 425.,  450.,  475.,  500.,  525.,  550.],
     # 'Populations.inh.cellparams.v_rest': np.arange(-60., -50., 2.),
     # 'Populations.inh.cellparams.v_reset': np.arange(-80., -70., 2.),
     # 'Populations.inh.cellparams.a': np.arange(0.5, 2., .5),
