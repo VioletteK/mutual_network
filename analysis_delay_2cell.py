@@ -99,56 +99,6 @@ class MidpointNormalize(mpl.colors.Normalize):
         x, y = [self.vmin, self.midpoint, self.vmax], [normalized_min, normalized_mid, normalized_max]
         return np.ma.masked_array(np.interp(value, x, y))
 
-# ------------------------------------------------------------------------------
-
-
-def shan_entropy(c):
-    #c_normalized = c
-    #c_normalized = c / float(np.sum(c))
-    #c_normalized = c[np.nonzero(c)]
-    #H = -np.nansum(c_normalized* np.log2(c_normalized))
-    H = np.nansum(-c* np.log2(c))
-
-    return H
-
-def mutual_information(p_xy,p_x,p_y):
-    if p_xy==0 or p_x==0 or p_y==0:
-        return 0 #ou 1 ?????????????
-    else :
-        p=p_xy/(p_x*p_y)
-        return np.sum(p_xy*np.log2(p))
-
-#sum(p[i] * np.log2(p[i]/q[i]) for i in range(len(p)))
-
-
-def make_c_XY(X,Y,bins,tdebutfenetre,tfinfenetre):
-    c_XY=[0 for i in range(bins)]
-    #Création de la liste L contenant les bins intervalles de Vm entre -90 et -40
-    largeurintervalle=(90-40)/bins
-    L=[[-90+i*largeurintervalle,-90+(i+1)*largeurintervalle] for i in range(bins)]
-
-    #Parcourir X et Y simultanément et voir si pour chaque valeur, ils sont simultanéement dans le même intervalle
-    for i in range(len(X)):
-        for jieme_intervalle in range(bins):
-            if X[i]>=L[jieme_intervalle][0] and X[i]<=L[jieme_intervalle][1] and Y[i]>=L[jieme_intervalle][0] and Y[i]<=L[jieme_intervalle][1]:
-                c_XY[jieme_intervalle]+=1
-    return(c_XY)
-
-def make_c_XY_quick(X,Y,bins,tdebutfenetre,tfinfenetre):
-    c_XY=[0 for i in range(bins)]
-    #Création de la liste L contenant les bins intervalles de Vm entre -90 et -40
-    #largeurintervalle=(90-40)/bins
-    #L=[[-90+i*largeurintervalle,-90+(i+1)*largeurintervalle] for i in range(bins)]
-
-    #Parcourir X et Y simultanément et voir si pour chaque valeur, ils sont simultanéement dans le même intervalle
-    for i in range(len(X)):
-        u=int((float(X[i])+90)*4)
-        v=int((float(Y[i])+90)*4)
-        if u==v:#*(-1)
-            c_XY[u]+=1
-    return(c_XY)
-
-
 
 # ------------------------------------------------------------------------------
 
