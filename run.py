@@ -207,24 +207,24 @@ for i,comb in enumerate(combinations):
 
     # if opts.analysis_file: # default analysis
     #     scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
-    a = importlib.import_module(opts.analysis_file[:-3])
-    scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
+    # a = importlib.import_module(opts.analysis_file[:-3])
+    # scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
     # analysis post search
-    if search and opts.map:
-        if i == 0:
-            with open(opts.data_folder+'/map.csv', "w", newline="") as csvfile:
-                fh = csv.writer(csvfile)
-                if len(testParams)>1:
-                    fh.writerow( ['#'+testParams[1]+':['+",".join(map(str, search[testParams[1]]))+"]" ] )
-                    fh.writerow( ['#'+testParams[0]+':['+",".join(map(str, search[testParams[0]]))+"]" ] )
-                else:
-                    fh.writerow( ['#'+testParams[0]+':['+",".join(map(str, search[testParams[0]]))+"]" ] )
-
-        info.append(scores) # current score
-
-        if len(testParams)>1:
-            if (i+1)%len(search[testParams[1]]) == 0:
-                with open(opts.data_folder+'/map.csv', 'a') as csvfile:
-                    fh = csv.writer(csvfile)
-                    fh.writerow( info )
-                    info = []
+    # if search and opts.map:
+    #     if i == 0:
+    #         with open(opts.data_folder+'/map.csv', "w", newline="") as csvfile:
+    #             fh = csv.writer(csvfile)
+    #             if len(testParams)>1:
+    #                 fh.writerow( ['#'+testParams[1]+':['+",".join(map(str, search[testParams[1]]))+"]" ] )
+    #                 fh.writerow( ['#'+testParams[0]+':['+",".join(map(str, search[testParams[0]]))+"]" ] )
+    #             else:
+    #                 fh.writerow( ['#'+testParams[0]+':['+",".join(map(str, search[testParams[0]]))+"]" ] )
+    #
+    #     info.append(scores) # current score
+    #
+    #     if len(testParams)>1:
+    #         if (i+1)%len(search[testParams[1]]) == 0:
+    #             with open(opts.data_folder+'/map.csv', 'a') as csvfile:
+    #                 fh = csv.writer(csvfile)
+    #                 fh.writerow( info )
+    #                 info = []

@@ -101,18 +101,18 @@ def analyse(params, folder, addon='', removeDataFile=False):
         edge = int(np.sqrt(n))
 
         # trials
-        for trial_id,trial in enumerate(params['trials'].items()):
-            print("\n"+params['trials'][trial[0]]['name'])
+        for trial_id,trial in enumerate(params['trials']):
+            print("\n"+trial['name'])
 
-            for itrial in range(params['trials'][trial[0]]['count']):
+            for itrial in range(trial['count']):
                 print("trial #",itrial)
                 timeslice_start = params['run_time'] * trial_id + params['Analysis']['transient'] # to avoid initial transient
                 timeslice_end   = params['run_time'] * (trial_id+itrial+1)
                 print("trial-based slicing window (ms):", timeslice_start, timeslice_end)
 
                 # get data
-                print("from file:",key+addon+'_'+params['trials'][trial[0]]['name']+str(itrial))
-                neo = pickle.load( open(folder+'/'+key+addon+'_'+params['trials'][trial[0]]['name']+str(itrial)+'.pkl', "rb") )
+                print("from file:",key+addon+'_'+trial['name']+str(itrial))
+                neo = pickle.load( open(folder+'/'+key+addon+'_'+trial['name']+str(itrial)+'.pkl', "rb") )
                 data = neo.segments[0]
 
                 # getting and slicing data
@@ -141,7 +141,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                 cell_coords = []
                 cell_indexes = []
                 cell_ids = []
-                with open(folder+'/'+key+addon+'_'+params['trials'][trial[0]]['name']+str(itrial)+'_positions.txt', 'r') as posfile:
+                with open(folder+'/'+key+addon+'_'+trial['name']+str(itrial)+'_positions.txt', 'r') as posfile:
                     print("... getting cell indexes and ids")
                     lines = posfile.readlines()
                     posfile.close()
@@ -183,15 +183,15 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         #a colormap each interval*dt from the injection's beginning
                         Vm_i=np.zeros((size,size)) #our future colormap
                         for j in range(size**2):
-                            Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,i+interval)])
+                            Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,min(i+interval,len(vm)))])
                         #is the image transposed ?
                         fig = plt.figure()
                         plt.imshow(Vm_i, cmap=plt.cm.RdBu,interpolation='none',vmin=-80,vmax=-50)
                         plt.colorbar()
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
-                        plt.title('window ['+str(tmin)+':'+str(tmax)+'] ms')
-                        fig.savefig(folder+'/AdaptedColormap'+str(i)+params['trials'][trial[0]]['name']+'_'+str(itrial)+'.png', transparent=True)
+                        plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
+                        fig.savefig(folder+'/AdaptedColormap'+str(i)+trial['name']+'_'+str(itrial)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot
@@ -218,7 +218,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
                         #################
                         # each Vms
-                        fig.savefig(folder+'/vm_'+params['trials'][trial[0]]['name']+'_'+str(itrial)+'neurone\n'+str(iv)+'.svg', transparent=True)
+                        fig.savefig(folder+'/vm_'+trial['name']+'_'+str(itrial)+'neurone\n'+str(iv)+'.svg', transparent=True)
                         plt.ylabel('Membrane Potential (mV)')
                         plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
                         plt.close()
