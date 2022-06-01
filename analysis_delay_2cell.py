@@ -250,8 +250,6 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     injection_start,injection_end = params['Injections']['py']['start']
                     interval = 100
                     listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
-
-                    number_of_annulus = 100
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
                     window = params['Recorders']['py']['v']['size']
@@ -264,68 +262,42 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     #the center of the annulus
                     ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
-                    #list of the annulus
-                    Annulus = [[] for i in range(number_of_annulus)]
-                    def dist(neurone,ref_neurone):
-                        x = neurone//size
-                        y = neurone%size
-                        return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
-
-                    r = dist([np.mean([min_point,max_point]),0],ref_neurone)
-                    print('... the width of the annulus is '+ str(r/number_of_annulus))
-                    #maybe no need to go to the border of the image
-                    for neuron in list_coord:
-                        d = dist(neuron,ref_neurone)
-                        for i in range(number_of_annulus):
-                            if i* r/number_of_annulus<d<= (i+1)*r/number_of_annulus:
-                                Annulus[i].append(neuron)
-                                break
-                    Annulus = list(filter(([]).__ne__, Annulus))
+                    V=len(vm)
                     max_time = run_time-injection_start-interval
+                    vm=vm.T
                     #Time_delay = np.arange(0,max_time,interval)
                     Time_delay = np.arange(0,1000,interval)
-                    V=len(vm)
-                    vm=vm.T
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
                     c_X,xedges = np.histogram(vm_base,1000,range=(-80.,-40.))
-                    #every interval (ms) we calculate the MI
+                    MI_delay=[]
+                    for time_delay in Time_delay :
+                        vm_neurone = vm[9][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
+                        c_Y,xedges = np.histogram(vm_neurone,1000,range=(-80.,-40.))
+                        MI_delay.append(mutual_info_score(c_X,c_Y))
                     fig=plt.figure()
-                    for A in Annulus :
-                        MI_annulus = []
-                        for time_delay in Time_delay :
-                            MI_delay = []
-                            for neuron in A :
-                                #print('Neurone' +str(neuron))
-                                vm_neurone = vm[list_coord.index(neuron)][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
-                                #calcul mutual Information between a and neuron
-                                #c_X,xedges = np.histogram(vm_base,200,range=(-90.,-40.))#,density=True)
-                                #,density=True)
-                                #c_Y,xedges = np.histogram(vm_neurone,200,range=(-90.,-40.))#,density=True)
-                                c_Y,xedges = np.histogram(vm_neurone,1000,range=(-80.,-40.))#,density=True)
-                                MI_delay.append(mutual_info_score(c_X,c_Y))
-                            MI_annulus.append(np.mean(MI_delay))
-                        plt.plot(Time_delay,MI_annulus, label='Anneau '+str(Annulus.index(A)), color = listcolor[Annulus.index(A)])
-                    plt.title('Mutual information du neurone '+str(ref_neurone))
+                    plt.plot(Time_delay,MI_delay)
+                    plt.title('Mutual information du neurone '+str(list_coord[9]))
                     plt.xlabel('Time delay')
                     plt.ylabel("MI")
                     plt.legend()
-                    fig.savefig(folder+'/Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+                    fig.savefig(folder+'/Mutual Information avec un neurone' +'.png')
                     #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
-                    #plot the Annulus
-                    Recorded_cell = np.zeros((window, window))
-                    for j in range(window**2):
-                        for A in Annulus :
-                            if list_coord[j] in A :
-                                Recorded_cell[j%window][j//window] = int(Annulus.index(A))+1
-                    fig1 = plt.figure()
-                    plt.imshow(Recorded_cell, cmap = 'winter',interpolation = 'none')
-                    plt.colorbar()
-                    plt.title('Annulus')
-                    fig1.savefig(folder+'/Annulus'+'.png')
+                    v =vm[9]
+                    fig=plt.figure()
+                    plt.plot([i for i in range(len(v))],v,linewidth=2)
+                    v =vm[list_coord.index(ref_neurone[0]*(size+1))]
+                    plt.plot([i for i in range(len(v))],v,linewidth=2)
+                    plt.title('MI VM Neurone '+str(list_coord[15]))
+                    plt.xlabel('Time')
+                    plt.ylim([-80,-40])
+                    plt.ylabel("Vm")
+                    plt.legend()
+                    fig.savefig(folder+'/MI Vm neurone de ref' +'.png')
+                    #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
                     plt.close()
-                    fig1.clf()
+                    fig.clf()
 
 
 

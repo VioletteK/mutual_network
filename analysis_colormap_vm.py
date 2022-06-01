@@ -155,17 +155,17 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                 panels = []
                 # return list for param search
-                scores = []
-                if 'scores' in params['Analysis'] and key in params['Analysis']['scores']:
-                    scores.append(0)   # 0. Spike count
-                    scores.append(0.0) # 1. Inter-Spike Interval
-                    scores.append(0.0) # 2. Coefficient of Variation
-                    scores.append("")  # 3. additional label for adapting ISI
-                    scores.append(0.0) # 4. Firing rate
-                    scores.append(0.0) # 5. mean power in the Delta range (0.1-4 Hz)
-                    scores.append(0.0) # 6. mean power in the Spindles range (7-14 Hz)
-                    scores.append(0.0) # 7. Cross-Correlation
-                    scores.append(0.0) # 8. Conductance Balance
+                # scores = []
+                # if 'scores' in params['Analysis'] and key in params['Analysis']['scores']:
+                #     scores.append(0)   # 0. Spike count
+                #     scores.append(0.0) # 1. Inter-Spike Interval
+                #     scores.append(0.0) # 2. Coefficient of Variation
+                #     scores.append("")  # 3. additional label for adapting ISI
+                #     scores.append(0.0) # 4. Firing rate
+                #     scores.append(0.0) # 5. mean power in the Delta range (0.1-4 Hz)
+                #     scores.append(0.0) # 6. mean power in the Spindles range (7-14 Hz)
+                #     scores.append(0.0) # 7. Cross-Correlation
+                #     scores.append(0.0) # 8. Conductance Balance
 
 
                 ###################################
@@ -177,8 +177,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     injection_start,injection_end = params['Injections']['py']['start']
                     interval = 10
-                    #for i in range(int(injection_start//dt),int(run_time//dt),interval):
-                    for i in range(int(injection_start//dt),int(1080//dt),interval):
+                    for i in range(int(injection_start//dt),int(run_time//dt),interval):
+                    #for i in range(int(injection_start//dt),int((injection_end+100)//dt),interval):
                         #clearly too long...
                         #a colormap each interval*dt from the injection's beginning
                         Vm_i=np.zeros((size,size)) #our future colormap
@@ -191,7 +191,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
                         plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
-                        fig.savefig(folder+'/AdaptedColormap'+str(i)+trial['name']+'_'+str(itrial)+'.png', transparent=True)
+                        fig.savefig(folder+'/AdaptedColormap'+str(i)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot
@@ -200,6 +200,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     ###### tracer tous les vms en svg
                         fig = plt.figure()
                         plt.plot(v,linewidth=2)
+                        plt.plot([i for i in range(len(v))],[-50 for i in range(len(v))],'.')
                         #plt.ylim([-100,0.0]) # GENERIC
                         #################
                         # plt.xlim([9900,12500]) # E/IPSP single pulse (0.1 Hz)
@@ -218,9 +219,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
                         #################
                         # each Vms
-                        fig.savefig(folder+'/vm_'+trial['name']+'_'+str(itrial)+'neurone\n'+str(iv)+'.svg', transparent=True)
+                        fig.savefig(folder+'/vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
                         plt.ylabel('Membrane Potential (mV)')
                         plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
+                        plt.ylim([-80,-40])
                         plt.close()
                         fig.clf()
                     #################
@@ -249,10 +251,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                 # for systems with low memory :)
                 if removeDataFile:
-                    os.remove(folder+'/'+key+addon+'_'+params['trials'][trial[0]]['name']+str(itrial)+'.pkl')
+                    os.remove(folder+'/'+key+addon+'_'+trial['name']+str(itrial)+'.pkl')
 
-                print("scores",key,":",scores)
-                # end of analysis level
-            # end of trial level
-        # end of population level
-    return scores
+    #             print("scores",key,":",scores)
+    #             # end of analysis level
+    #         # end of trial level
+    #     # end of population level
+    # return scores
