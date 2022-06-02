@@ -197,7 +197,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     ##### Vm plot
                     vm = vm.transpose()
                     for iv,v in enumerate(vm):
-                    ###### tracer tous les vms en svg
+                    ###### tracer tous les vms
                         fig = plt.figure()
                         plt.plot(v,linewidth=2)
                         plt.plot([i for i in range(len(v))],[-50 for i in range(len(v))],'.')
