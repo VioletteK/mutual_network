@@ -198,7 +198,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     # Define the Annulus supposing the injection points are forming a square
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 100
+                    interval = 50
                     listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
@@ -212,17 +212,19 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     #the center of the annulus
                     ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
+                    print(ref_neurone)
                     V=len(vm)
                     max_time = run_time-injection_start-interval
                     vm=vm.T
                     #Time_delay = np.arange(0,max_time,interval)
-                    Time_delay = np.arange(0,1000,interval)
+                    Time_delay = np.arange(-200,500,10)
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
-                    c_X,xedges = np.histogram(vm_base,1000,range=(-80.,-40.))
+                    c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
                     MI_delay=[]
                     for time_delay in Time_delay :
+
                         vm_neurone = vm[9][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
-                        c_Y,xedges = np.histogram(vm_neurone,1000,range=(-80.,-40.))
+                        c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))
                         MI_delay.append(mutual_info_score(c_X,c_Y))
                     fig=plt.figure()
                     plt.plot(Time_delay,MI_delay)
@@ -239,9 +241,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.plot([i for i in range(len(v))],v,linewidth=2)
                     v =vm[list_coord.index(ref_neurone[0]*(size+1))]
                     plt.plot([i for i in range(len(v))],v,linewidth=2)
-                    plt.title('MI VM Neurone '+str(list_coord[15]))
+                    plt.title('MI VM Neurone '+str(list_coord[9]))
                     plt.xlabel('Time')
-                    plt.ylim([-80,-40])
+                    plt.ylim([-90,-40])
                     plt.ylabel("Vm")
                     plt.legend()
                     fig.savefig(folder+'/MI Vm neurone de ref' +'.png')
