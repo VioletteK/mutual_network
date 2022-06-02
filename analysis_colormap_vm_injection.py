@@ -177,8 +177,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     injection_start,injection_end = params['Injections']['py']['start']
                     interval = 10
-                    for i in range(int(injection_start//dt),int(run_time//dt),interval):
-                    #for i in range(int(injection_start//dt),int((injection_end+100)//dt),interval):
+                    #for i in range(int(injection_start//dt),int(run_time//dt),interval):
+                    for i in range(int(injection_start//dt),int((injection_end)//dt),interval):
                         #clearly too long...
                         #a colormap each interval*dt from the injection's beginning
                         Vm_i=np.zeros((size,size)) #our future colormap
@@ -191,7 +191,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
                         plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
-                        fig.savefig(folder+'/tau='+params['Populations']['py']['cellparams']['tau_w']+'Colormap'+str(i)+'.png', transparent=True)
+                        fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Colormap'+str(i)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot
@@ -219,7 +219,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
                         #################
                         # each Vms
-                        fig.savefig(folder+'/tau='+params['Populations']['py']['cellparams']['tau_w']+'vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
+                        fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
                         plt.ylabel('Membrane Potential (mV)')
                         plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
                         plt.ylim([-80,-40])
