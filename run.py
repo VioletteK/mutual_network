@@ -163,7 +163,7 @@ info = []
 totc = len(combinations)
 for i,comb in enumerate(combinations):
     if totc > 1:
-        print("\n\nparam combination:",i,"/",totc)
+        print("\n\nparam combination:",i+1,"/",totc)
         print("current set:",comb)
 
     # replacement
@@ -208,7 +208,7 @@ for i,comb in enumerate(combinations):
     # if opts.analysis_file: # default analysis
     #     scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
     # a = importlib.import_module(opts.analysis_file[:-3])
-    # scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
+    scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
     # analysis post search
     # if search and opts.map:
     #     if i == 0:
