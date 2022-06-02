@@ -191,7 +191,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
                         plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
-                        fig.savefig(folder+'/AdaptedColormap'+str(i)+'.png', transparent=True)
+                        fig.savefig(folder+'/tau='+params['Populations']['py']['cellparams']['tau_w']+'Colormap'+str(i)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot
@@ -219,7 +219,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
                         #################
                         # each Vms
-                        fig.savefig(folder+'/vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
+                        fig.savefig(folder+'/tau='+params['Populations']['py']['cellparams']['tau_w']+'vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
                         plt.ylabel('Membrane Potential (mV)')
                         plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
                         plt.ylim([-80,-40])
