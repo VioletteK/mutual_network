@@ -200,26 +200,23 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = params['Injections']['py']['start']
+                    injection_start,injection_end = 148,3000
                     interval = 50
-                    listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
+                    listcolor=["black","brown","darkred","red","darkorange","orangered","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
                     number_of_annulus = 10
 
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
-                    window = params['Recorders']['py']['v']['size']
+                    window = params['Recorders']['py']['v']['size']+1
                     list_coord = [(x+i)*size+(y+j) for i in range(window) for j in range(window)]
                     #Here is a list of the ancient coord at the index of their new
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
 
-                    injection_points=params['Injections']['py']['cellidx']
-                    min_point, max_point = min(injection_points)//size,max(injection_points)//size
 
-
-                    x_ref =
-                    y_ref =
-                    index = x_ref*window + y_ref
-                    ref_neurone = [list_coord[index]//size,list_coord[index]%size]
+                    x_ref = 20
+                    y_ref = 50
+                    index = int(x_ref*window + y_ref)
+                    ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
                     #list of the annulus
                     Annulus = [[] for i in range(number_of_annulus)]
 
@@ -228,9 +225,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         x = neurone//size
                         y = neurone%size
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
-
-                    #r = dist([np.mean([min_point,max_point]),0],ref_neurone)
-                    r = 8
+                    r=8
+                    #r = dist([np.floor(size/2),0],ref_neurone)
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
                     #maybe no need to go to the border of the image
@@ -245,7 +241,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(0,1000,10)
+                    Time_delay = np.arange(-100,1000,10)
                     #the windows where we calculate the MI have to intersect !!!
                     V=len(vm)
                     vm=vm.T
@@ -274,7 +270,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.xlabel('Time delay')
                     plt.ylabel("MI")
                     plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
-                    fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+                    fig.savefig(folder+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
                     #plot the Annulus
@@ -287,7 +283,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.imshow(Recorded_cell, cmap = 'inferno',interpolation = 'none')
                     plt.colorbar()
                     plt.title('Annulus')
-                    fig1.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Annulus'+'.png')
+                    fig1.savefig(folder+'Annulus'+'.png')
                     plt.close()
                     fig1.clf()
 

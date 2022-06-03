@@ -203,7 +203,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     injection_start,injection_end = params['Injections']['py']['start']
                     interval = 50
                     listcolor=["black","brown","darkred","red","darkorange","orangered","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
-                    number_of_annulus = 10
+                    number_of_annulus = 20
 
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
@@ -228,8 +228,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         y = neurone%size
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
-                    #r = dist([np.mean([min_point,max_point]),0],ref_neurone)
-                    r=8
+                    r = dist([np.mean([min_point,max_point]),0],ref_neurone)
+                    #r=8
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
                     #maybe no need to go to the border of the image
