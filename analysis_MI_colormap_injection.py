@@ -201,7 +201,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 50
+                    interval = 30
 
 
                     x = params['Recorders']['py']['v']['x']
@@ -216,8 +216,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     min_point, max_point = min(injection_points)//size,max(injection_points)//size
 
                     #the 'center' of the annulus taken as the central point of all the cells
-                    ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
-
+                    # ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
+                    ref_neurone = [50,50]
 
                     Recorded_cell = np.zeros((window, window))
                     Vm_t = np.zeros((window,window))
@@ -226,14 +226,14 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-100,800,10)
+                    Time_delay = np.arange(-40,100,2)
                     #the windows where we calculate the MI have to intersect !!!
                     V=len(vm)
                     vm=vm.T
                     indice = list_coord.index(ref_neurone[0]*size+ref_neurone[1])
                     vm_base = vm[indice][int(injection_start/dt):int((injection_start+interval)/dt)]
                     #list of the vm values of the central neuron beetween the beginning of the injection and beginnin+interval
-                    c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
+                    c_X,xedges = np.histogram(vm_base,200,range=(-90.,-40.))
                     #every interval (ms) we calculate the MI
                     for time_delay in Time_delay:
                         for i in range(window**2):
@@ -242,7 +242,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                             #     #this is the column
                             #     #vm_neurone = vm[i*window+j][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                             vm_neurone = vm[i][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
-                            c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))#,density=True)
+                            c_Y,xedges = np.histogram(vm_neurone,200,range=(-90.,-40.))#,density=True)
                             Recorded_cell[i//window][i%window]= mutual_info_score(c_X,c_Y)
                             Vm_t[i//window][i%window] = np.mean(vm_neurone)
 
