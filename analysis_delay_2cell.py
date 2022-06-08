@@ -202,7 +202,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
-                    window = params['Recorders']['py']['v']['size']
+                    window = params['Recorders']['py']['v']['size']+1
                     list_coord = [(x+i)*size+(y+j) for i in range(window) for j in range(window)]
                     #Here is a list of the ancient coord at the index of their new
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
