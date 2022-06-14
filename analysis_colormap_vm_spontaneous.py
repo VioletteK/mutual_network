@@ -182,10 +182,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         #a colormap each interval*dt from the injection's beginning
                         Vm_i=np.zeros((size,size)) #our future colormap
                         for j in range(size**2):
-                            Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,min(i+interval,len(vm)))])
+                            # Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,min(i+interval,len(vm)))])
+                            Vm_i[j%size][j//size] = vm[i][j]
                         #is the image transposed ?
                         fig = plt.figure()
-                        plt.imshow(Vm_i, cmap=plt.cm.RdBu,interpolation='none',vmin=-80,vmax=-50)
+                        plt.imshow(Vm_i, cmap=matplotlib.cm.get_cmap('RdBu_r'),interpolation='none',vmin=-80,vmax=-50)
                         plt.colorbar()
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
@@ -194,36 +195,36 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         plt.close()
                         fig.clf()
                     ##### Vm plot
-                    vm = vm.transpose()
-                    for iv,v in enumerate(vm):
-                    ###### tracer tous les vms en svg
-                        fig = plt.figure()
-                        plt.plot(v,linewidth=2)
-                        plt.plot([i for i in range(len(v))],[-50 for i in range(len(v))],'.')
-                        #plt.ylim([-100,0.0]) # GENERIC
-                        #################
-                        # plt.xlim([9900,12500]) # E/IPSP single pulse (0.1 Hz)
-                        #################
-                        # plt.xlim([10000,60000]) # E/IPSP single pulse (0.1 Hz)
-                        # plt.ylim([-66,-54]) # Control EPSP on RE
-                        #################
-                        # plt.ylim([-75.5,-71.5]) # Control EPSP on RS
-                        # plt.ylim([-79.,-74.5]) # ACh EPSP on RS
-                        # plt.ylim([-79.,-74.5]) # Control IPSP on RS
-                        # plt.ylim([-79.,-74.5]) # ACh IPSP on RS
-                        #################
-                        # plt.ylim([-64.5,-60]) # Control EPSP on FS
-                        # plt.ylim([-51.5,-47.]) # ACh EPSP on FS
-                        # plt.ylim([-67.5,-63.5]) # Control IPSP on FS
-                        # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
-                        #################
-                        # each Vms
-                        fig.savefig(folder+'/vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
-                        plt.ylabel('Membrane Potential (mV)')
-                        plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
-                        plt.ylim([-80,-40])
-                        plt.close()
-                        fig.clf()
+                    # vm = vm.transpose()
+                    # for iv,v in enumerate(vm):
+                    # ###### tracer tous les vms en svg
+                    #     fig = plt.figure()
+                    #     plt.plot(v,linewidth=2)
+                    #     plt.plot([i for i in range(len(v))],[-50 for i in range(len(v))],'.')
+                    #     #plt.ylim([-100,0.0]) # GENERIC
+                    #     #################
+                    #     # plt.xlim([9900,12500]) # E/IPSP single pulse (0.1 Hz)
+                    #     #################
+                    #     # plt.xlim([10000,60000]) # E/IPSP single pulse (0.1 Hz)
+                    #     # plt.ylim([-66,-54]) # Control EPSP on RE
+                    #     #################
+                    #     # plt.ylim([-75.5,-71.5]) # Control EPSP on RS
+                    #     # plt.ylim([-79.,-74.5]) # ACh EPSP on RS
+                    #     # plt.ylim([-79.,-74.5]) # Control IPSP on RS
+                    #     # plt.ylim([-79.,-74.5]) # ACh IPSP on RS
+                    #     #################
+                    #     # plt.ylim([-64.5,-60]) # Control EPSP on FS
+                    #     # plt.ylim([-51.5,-47.]) # ACh EPSP on FS
+                    #     # plt.ylim([-67.5,-63.5]) # Control IPSP on FS
+                    #     # plt.ylim([-54.5,-50.5]) # ACh IPSP on FS
+                    #     #################
+                    #     # each Vms
+                    #     fig.savefig(folder+'/vm_'+'neurone\n'+str(iv)+'.svg', transparent=True)
+                    #     plt.ylabel('Membrane Potential (mV)')
+                    #     plt.xlabel('Time (dt='+str(params['dt'])+' ms)')
+                    #     plt.ylim([-80,-40])
+                    #     plt.close()
+                    #     fig.clf()
                     #################
                     # # Average Vms
                     # fig = plt.figure()
