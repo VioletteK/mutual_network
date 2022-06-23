@@ -18,7 +18,7 @@ number_of_annulus = 21
 
 # folder = 'Single C2 whisker evoked responses, second set of 10 trials/'
 folder = 'Single_C2_whisker_evoked_responses_first_10_trials/'
-# for i in [11,12,15,16,17,18,19,20]:
+# for i in [11,12,13,14,15,16,17,18,19,20]:
 for i in range(1,11):
 # for i in [13,14]:
     file = 'C2_'+str(i)
@@ -34,7 +34,7 @@ for i in range(1,11):
     dt = 1
     run_time = 511
     size = 100
-    injection_start,injection_end = 107,511
+    injection_start,injection_end = 0,511
     interval = 5
     x = 0
     y = 0
@@ -51,7 +51,7 @@ for i in range(1,11):
         os.makedirs(header+newheader)
     print('\nAnalysing data of '+file)
     print('\nData will be saved in '+newheader)
-    Time_delay = np.arange(-5,25,1)
+    Time_delay = np.arange(0,500,1)
     V=len(L)
     # Recorded_cell = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
     Recorded_cell_brut = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
@@ -95,55 +95,55 @@ for i in range(1,11):
                 # vm_neurone = [vm[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
                 vm_neurone_brut = [L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
                 # c_Y,xedges = np.histogram(vm_neurone,200,range=(-0.1,0.02))#,density=True)
-                c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
+                # c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 # Recorded_cell[injection_start+time_delay][i][j]= mutual_info_score(c_X,c_Y)
-                Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
+                # Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
 
 
         fig=plt.figure()
-        fig.add_subplot(1,3,1)
+        # fig.add_subplot(1,3,1)
         plt.imshow(L[injection_start+time_delay],vmin=-0.01,vmax=0.016,cmap = 'viridis')
         plt.colorbar()
         plt.title('VM '+str(injection_start+time_delay))
         plt.show()
 
-        fig.add_subplot(1,3,2)
-        Recorded_cell_filtered=accentuation1(signal.convolve2d(np.array(Recorded_cell_brut[injection_start+time_delay]),Kernel2, mode='same'))
-        plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
-        plt.clim([0,0.028])
-        plt.colorbar()
-        plt.contour(Recorded_cell_filtered,colors = 'r', linewidths=2)
-        plt.title('MI brut '+str(injection_start+time_delay))
-        #
-        fig.add_subplot(1,3,3)
-
-        plt.imshow(Recorded_cell_filtered, cmap = 'inferno',interpolation='none')
-        plt.clim([0,0.028])
-        plt.colorbar()
-        plt.title('Filtered MI '+str(injection_start+time_delay))
-        # plt.contour(Recorded_cell_filtered)
-        # [U,V]=np.gradient(Recorded_cell)
-        # plt.quiver(X,Y,-V,U,color='white')
-
-        # Recorded_cell1=signal.convolve2d(accentuation2(Recorded_cell),Kernel1, mode='same')
-        #
-        # fig.add_subplot(2,2,3)
-        #
-        # plt.imshow(Recorded_cell1, cmap = 'inferno',interpolation='none')
+        # fig.add_subplot(1,3,2)
+        # Recorded_cell_filtered=accentuation1(signal.convolve2d(np.array(Recorded_cell_brut[injection_start+time_delay]),Kernel2, mode='same'))
+        # plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
         # plt.clim([0,0.028])
         # plt.colorbar()
-        # plt.title('MI filtered'+str(injection_start+time_delay))
+        # plt.contour(Recorded_cell_filtered,colors = 'r', linewidths=2)
+        # plt.title('MI brut '+str(injection_start+time_delay))
+        # #
+        # fig.add_subplot(1,3,3)
         #
-        # fig.add_subplot(2,2,4)
-        # plt.imshow(Recorded_cell1, cmap = 'inferno',interpolation='none')
+        # plt.imshow(Recorded_cell_filtered, cmap = 'inferno',interpolation='none')
         # plt.clim([0,0.028])
         # plt.colorbar()
-        # # plt.contour(Recorded_cell1)
-        # [U,V]=np.gradient(Recorded_cell1)
-        # plt.quiver(X,Y,-V,U,color='white')
+        # plt.title('Filtered MI '+str(injection_start+time_delay))
+        # # plt.contour(Recorded_cell_filtered)
+        # # [U,V]=np.gradient(Recorded_cell)
+        # # plt.quiver(X,Y,-V,U,color='white')
+        #
+        # # Recorded_cell1=signal.convolve2d(accentuation2(Recorded_cell),Kernel1, mode='same')
+        # #
+        # # fig.add_subplot(2,2,3)
+        # #
+        # # plt.imshow(Recorded_cell1, cmap = 'inferno',interpolation='none')
+        # # plt.clim([0,0.028])
+        # # plt.colorbar()
+        # # plt.title('MI filtered'+str(injection_start+time_delay))
+        # #
+        # # fig.add_subplot(2,2,4)
+        # # plt.imshow(Recorded_cell1, cmap = 'inferno',interpolation='none')
+        # # plt.clim([0,0.028])
+        # # plt.colorbar()
+        # # # plt.contour(Recorded_cell1)
+        # # [U,V]=np.gradient(Recorded_cell1)
+        # # plt.quiver(X,Y,-V,U,color='white')
 
 
-        filename= '/VM_MI'+str(injection_start+time_delay)+'.png'
+        filename= '/VM_'+str(injection_start+time_delay)+'.png'
         fig.savefig(header+newheader+filename, transparent=True)
         plt.show(block=True)
         plt.close()
