@@ -219,9 +219,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 70
+                    interval = 50
                     listcolor=["black","brown","darkred","red","orangered","darkorange","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
-                    number_of_annulus = 8
+                    number_of_annulus = 10
 
 
 
@@ -257,7 +257,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=20
+                    r=10
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
                     #maybe no need to go to the border of the image
@@ -280,7 +280,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-100,300,5)
+                    Time_delay = np.arange(-100,250,3)
                     #the windows where we calculate the MI have to intersect !!!
                     V=len(vm)
                     vm=vm.T
@@ -307,7 +307,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
                         #
                         # MI_annulus_filtered=MI_annulus
-                        MI_annulus_filtered=savgol_filter(MI_annulus, 21, 3)
+                        MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
                         ###Gaussian Fit
                         #
                         # H, Aa, x0, sigma = gauss_fit(Time_delay, MI_annulus)
@@ -317,7 +317,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # H,Aa,k,theta = curve_fit(Gamma, Time_delay, MI_annulus, p0=[min(MI_annulus),max(MI_annulus)/0.2,2,2])[0]
 
                         # fit_y = Gamma(Time_delay,H,Aa, k, theta)
-                        if Annulus.index(A)>0:
+                        if Annulus.index(A)>2:
 
                             maxi = max(MI_annulus_filtered)
                             Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
@@ -353,7 +353,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.xlabel('Time delay')
                     plt.ylabel("MI")
                     plt.legend(frameon=False)
-                    fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+                    fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+
+                    # fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
                     #plot the Annulus
@@ -384,7 +386,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.legend()
                     plt.title('Maximum brut')
 
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum'+'.png', transparent=True)
+                    fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum'+'.png', transparent=True)
                     plt.close()
                     fig2.clf()
 
@@ -402,7 +404,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.legend()
                     plt.title('Maximum savgol')
 
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum_savgol'+'.png',transparent=True)
+                    fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum_savgol'+'.png',transparent=True)
                     plt.close()
                     fig2.clf()
 

@@ -218,10 +218,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = 1110,3000
-                    interval = 50
+                    injection_start,injection_end = 1400,3000
+                    interval = 80
                     listcolor=["black","brown","darkred","red","orangered","darkorange","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
-                    number_of_annulus = 7
+                    number_of_annulus = 10
 
                     Time_maximum = []
                     list_rho=[]
@@ -237,8 +237,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
 
-                    x_ref = 30
-                    y_ref = 58
+                    x_ref = 46
+                    y_ref = 14
                     index = int(x_ref*window + y_ref)
                     ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
 
@@ -251,7 +251,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=10
+                    r=15
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
                     #maybe no need to go to the border of the image
@@ -273,7 +273,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-200,500,10)
+                    Time_delay = np.arange(-300,500,5)
                     #the windows where we calculate the MI have to intersect !!!
                     V=len(vm)
                     vm=vm.T
@@ -299,8 +299,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 MI_delay.append(mutual_info_score(c_X,c_Y))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
-                        MI_annulus_filtered=MI_annulus
-                        # MI_annulus_filtered=savgol_filter(MI_annulus, 21, 3)
+                        # MI_annulus_filtered=MI_annulus
+                        MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
                         ###Gaussian Fit
                         #
                         # H, Aa, x0, sigma = gauss_fit(Time_delay, MI_annulus_filtered)

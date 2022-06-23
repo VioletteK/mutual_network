@@ -191,11 +191,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
                         plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
-                        fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Colormap'+str(i)+'.png', transparent=True)
+                        fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Colormap'+str(i)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot
-                    vm = vm.transpose()
+                    # vm = vm.transpose()
                     # for iv,v in enumerate(vm):
                     ###### tracer tous les vms
                         # fig = plt.figure()

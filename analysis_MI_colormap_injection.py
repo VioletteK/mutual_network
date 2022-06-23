@@ -254,7 +254,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         plt.clim([0,0.4])
                         plt.colorbar()
                         fig.add_subplot(1,2, 2)
-                        plt.imshow(Vm_t, cmap=plt.cm.RdBu,interpolation='none',vmin=-80,vmax=-50)
+                        plt.imshow(Vm_t, cmap=plt.cm.get_cmap('RdBu_r'),interpolation='none',vmin=-80,vmax=-50)
                         plt.colorbar()
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)

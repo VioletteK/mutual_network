@@ -200,7 +200,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = 148,3000
+                    injection_start,injection_end = 230,3000
                     interval = 50
                     listcolor=["black","brown","darkred","red","darkorange","orangered","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
                     number_of_annulus = 10
@@ -213,8 +213,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
 
 
-                    x_ref = 20
-                    y_ref = 50
+                    x_ref = 11
+                    y_ref = 59
                     index = int(x_ref*window + y_ref)
                     ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
                     #list of the annulus

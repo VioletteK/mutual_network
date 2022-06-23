@@ -204,6 +204,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     interval = 50
 
 
+
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
                     window = params['Recorders']['py']['v']['size']+1
@@ -243,7 +244,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 #vm_neurone = vm[i*window+j][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                                 vm_neurone = vm[i*window+j][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
                                 c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))#,density=True)
-                                Recorded_cell[i][j]= mutual_info_score(c_X,c_Y)
+                                Recorded_cell[j][i]= mutual_info_score(c_X,c_Y)
 
                         Recorded_cell[indice//window][indice%window]=0.4
                         fig=plt.figure()

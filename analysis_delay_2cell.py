@@ -198,7 +198,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     # Define the Annulus supposing the injection points are forming a square
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 50
+                    interval = 40
                     listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
@@ -212,41 +212,50 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     #the center of the annulus
                     ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
-                    print(ref_neurone)
+                    looked_neurone = [56,50]
+
                     V=len(vm)
                     max_time = run_time-injection_start-interval
                     vm=vm.T
                     #Time_delay = np.arange(0,max_time,interval)
-                    Time_delay = np.arange(-200,500,10)
+                    Time_delay = np.arange(-200,1000,1)
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
                     c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
                     MI_delay=[]
                     for time_delay in Time_delay :
 
-                        vm_neurone = vm[9][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
+                        vm_neurone = vm[list_coord.index(looked_neurone[0]*size+looked_neurone[1])][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                         c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))
                         MI_delay.append(mutual_info_score(c_X,c_Y))
                     fig=plt.figure()
+                    fig.add_subplot(3,1,1)
                     plt.plot(Time_delay,MI_delay)
-                    plt.title('Mutual information du neurone '+str(list_coord[9]))
+                    plt.title('Mutual information du neurone '+str(list_coord[list_coord.index(looked_neurone[0]*size+looked_neurone[1])]))
                     plt.xlabel('Time delay')
                     plt.ylabel("MI")
                     plt.legend()
-                    fig.savefig(folder+'/Mutual Information avec un neurone' +'.png')
-                    #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
-                    plt.close()
-                    fig.clf()
-                    v =vm[9]
-                    fig=plt.figure()
-                    plt.plot([i for i in range(len(v))],v,linewidth=2)
-                    v =vm[list_coord.index(ref_neurone[0]*(size+1))]
-                    plt.plot([i for i in range(len(v))],v,linewidth=2)
-                    plt.title('MI VM Neurone '+str(list_coord[9]))
+
+                    fig.add_subplot(3,1,2)
+                    cells = np.zeros((window,window))
+                    for i in range(window):
+                        for j in range(window):
+                            cells[j][i]=vm[i*window+j][int((200+injection_start)/dt)]
+                    cells[list_coord.index(ref_neurone[0]*size+ref_neurone[1])//window][list_coord.index(ref_neurone[0]*size+ref_neurone[1])%window] = 1
+                    cells[list_coord.index(looked_neurone[0]*size+looked_neurone[1])//window][list_coord.index(looked_neurone[0]*size+looked_neurone[1])%window] = 1
+                    plt.imshow(cells,vmax = 0.5)
+
+                    fig.add_subplot(3,1,3)
+                    v = [vm[list_coord.index(looked_neurone[0]*size+looked_neurone[1])][int((injection_start+t)/dt)] for t in Time_delay]
+
+                    plt.plot(Time_delay,v,linewidth=2)
+                    v =np.array([vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int((injection_start+t)/dt)] for t in Time_delay])
+                    plt.plot(Time_delay,v+40,linewidth=2,color = 'r')
+                    plt.title('MI VM Neurone '+str(list_coord[list_coord.index(looked_neurone[0]*size+looked_neurone[1])]))
                     plt.xlabel('Time')
-                    plt.ylim([-90,-40])
+                    plt.ylim([-90,0])
                     plt.ylabel("Vm")
-                    plt.legend()
-                    fig.savefig(folder+'/MI Vm neurone de ref' +'.png')
+
+                    fig.savefig(folder+'/'+str(params['Populations']['py']['cellparams']['tau_w'])+'MI Vm neurone de ref' +'.png')
                     #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
