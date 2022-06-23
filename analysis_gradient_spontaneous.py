@@ -200,7 +200,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = params['Injections']['py']['start']
+                    injection_start,injection_end = 1400,3000
                     interval = 50
                     step =10
 
@@ -214,11 +214,12 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     #Here is a list of the ancient coord at the index of their new
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
 
-                    injection_points=params['Injections']['py']['cellidx']
-                    min_point, max_point = min(injection_points)//size,max(injection_points)//size
 
-                    #the 'center' of the annulus taken as the central point of all the cells
-                    ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
+                    x_ref = 46
+                    y_ref = 14
+                    index = int(x_ref*window + y_ref)
+                    ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
+
                     Kernel1 = 1/16*np.array([
                     [1,2,1],
                     [2,4,2],
@@ -249,7 +250,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-50,500,step)
+                    Time_delay = np.arange(-100,500,step)
 
                     Recorded_cell = [np.zeros((window, window)) for t in range(int(injection_end/dt))]
                     Norm_vect = [np.zeros((window, window)) for t in range(int(injection_end/dt))]
@@ -276,10 +277,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                             vm_neurone = vm[i][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
                             c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))#,density=True)
 
-                            Recorded_cell[int((injection_start+time_delay)/dt)][i%window][i//window]= mutual_info_score(c_X,c_Y)
+                            Recorded_cell[int((injection_start+time_delay)/dt)][i//window][i%window]= mutual_info_score(c_X,c_Y)
 
                             # Recorded_cell[i//window][i%window]= accentuation2(mutual_info_score(c_X,c_Y))
-                            Vm_t[i%window][i//window] = np.mean(vm_neurone)
+                            Vm_t[i//window][i%window] = np.mean(vm_neurone)
                         # # Recorded_cell2=signal.convolve2d(Recorded_cell,Kernel2, mode='same')
                         ############################
                         #TENTATIVE ADAPTATION CODE SOURCE GRADIENT PYTHON
@@ -326,16 +327,16 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         #
                         #     else :
                         #         Gradient[int((injection_start+time_delay)/dt)][i]=np.array([0,0])
-                        Recorded_cell[int((injection_start+time_delay)/dt)][indice%window][indice//window]=0.4
+                        Recorded_cell[int((injection_start+time_delay)/dt)][indice//window][indice%window]=0.4
 
 
-                        fig=plt.figure()
-                        # fig.add_subplot(2,1,1)
-                        plt.imshow(Recorded_cell[int((injection_start+time_delay)/dt)], cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
+                        # fig=plt.figure()
+                        # # fig.add_subplot(2,1,1)
+                        # plt.imshow(Recorded_cell[int((injection_start+time_delay)/dt)], cmap = 'inferno',interpolation='none')
+                        # plt.clim([0,0.4])
 
                         [U,V]=Gradient[int((injection_start+time_delay)/dt)]
-                        plt.quiver(X,Y,-V,U,color='white')
+                        # plt.quiver(X,Y,-V,U,color='white')
                         # plt.contour(Recorded_cell)
                         # plt.colorbar()
                         # fig.add_subplot(2,1,2)
@@ -344,23 +345,23 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         # [U,V]=np.gradient(Recorded_cell[int((injection_start+time_delay)/dt)])
                         # plt.quiver(X,Y,-V,U,color='white')
 
-                        tmin=float(i*dt)
-                        tmax=float((i+interval)*dt)
-                        plt.show(block=True)
-                        #plt.title('MI Vm'+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
-                        fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_Gradient'+str(time_delay)+'.png')
-                        plt.close()
-                        fig.clf()
-                        fig=plt.figure()
+                        # tmin=float(i*dt)
+                        # tmax=float((i+interval)*dt)
+                        # plt.show(block=True)
+                        # #plt.title('MI Vm'+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_Gradient'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
+                        # fig=plt.figure()
                         for j in range(window):
                             for i in range(window):
 
                                 Norm_vect[int((injection_start+time_delay)/dt)][i][j]=np.linalg.norm([U[i][j],V[i][j]])
-                        plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.3,cmap= 'YlGnBu')
-                        plt.colorbar()
-                        fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_NormVect_'+str(time_delay)+'.png')
-                        plt.close()
-                        fig.clf()
+                        # plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.3,cmap= 'YlGnBu')
+                        # plt.colorbar()
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_NormVect_'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
 
 
                     def weighted_mean(values,weights):
