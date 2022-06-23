@@ -370,7 +370,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                             return np.sum([values[i]*weights[i] for i in range(len(values))])/np.sum(weights)
 
                     fig = plt.figure()
-                    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for i in range(window)] for j in range(window)], interpolation = 'none',vmin = 0,vmax=0.028, cmap = 'viridis')
+                    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.028, cmap = 'viridis')
                     plt.colorbar()
                     fig.savefig(folder+'/tau = '+ str(params['Populations']['py']['cellparams']['tau_w'])+'Moyenne_generale'+'.png')
                     plt.close()
@@ -379,7 +379,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     # print(np.arange(0,10,len(Time_delay)))
                     # print(weighted_mean([Norm_vect[int((injection_start+time_delay)/dt)][0][0] for time_delay in Time_delay], np.arange(0,10,len(Time_delay))))
                     fig = plt.figure()
-                    plt.imshow([[weighted_mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay], np.linspace(0,10,len(Time_delay))) for i in range(window)] for j in range(window)], interpolation = 'none',vmin = 0,vmax=0.028, cmap = 'viridis')
+                    plt.imshow([[weighted_mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay], np.linspace(0,10,len(Time_delay))) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.028, cmap = 'viridis')
                     plt.colorbar()
                     fig.savefig(folder+'/tau = '+ str(params['Populations']['py']['cellparams']['tau_w'])+'Weighted_mean'+'.png')
                     plt.close()
