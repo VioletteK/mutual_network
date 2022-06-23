@@ -36,8 +36,9 @@
     # 'Populations.py.cellparams.v_reset': np.arange(-75., -55., 2.),
     # 'Populations.py.cellparams.a': np.arange(0.01, 0.05, .005),
     # 'Populations.py.cellparams.b': np.arange(0.01, 0.05, .005),
-    'Populations.py.cellparams.tau_w': [ 425.,  450.,  475.,  500.,  525.,  550.],
-    # 'Populations.inh.cellparams.tau_w': [ 425.,  450.,  475.,  500.,  525.,  550.],
+    'Populations.inh.cellparams.tau_w': [400., 425.,  450.,  475.,  500.,  525.,  550., 575.],
+    'Populations.py.cellparams.tau_w': [400., 425.,  450.,  475.,  500.,  525.,  550., 575.],
+
     # 'Populations.inh.cellparams.v_rest': np.arange(-60., -50., 2.),
     # 'Populations.inh.cellparams.v_reset': np.arange(-80., -70., 2.),
     # 'Populations.inh.cellparams.a': np.arange(0.5, 2., .5),

@@ -205,10 +205,12 @@ for i,comb in enumerate(combinations):
                 h.save_data(Populations, opts.data_folder, Frames, addon=str(comb)+'_'+trial['name']+str(itrial))
         sim.end()
 
-    # if opts.analysis_file: # default analysis
-    #     scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
-    # a = importlib.import_module(opts.analysis_file[:-3])
-    scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
+    if opts.analysis_file: # default analysis
+        a = importlib.import_module(opts.analysis_file[:-3])
+        scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
+    #
+
+    # scores = a.analyse(params, opts.data_folder, str(comb), opts.remove)
     # analysis post search
     # if search and opts.map:
     #     if i == 0:
