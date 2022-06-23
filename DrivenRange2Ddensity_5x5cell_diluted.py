@@ -11,7 +11,7 @@
             'cellparams' : {
                 'start':0.0,
                 'rate':4.,
-                'duration': 1000.0
+                'duration': 3000.0
             }
         },
 
@@ -142,9 +142,9 @@
             'spikes' : 'all',
             'v' : {
                 'MUA': True,
-                'x': 40, #Correspond à la limite inférieure gauche du carré de 10x10 centré en 32 donc 32-5=27
-                'y': 40,
-                'size': 20,
+                'x': 18, #Correspond à la limite inférieure gauche du carré de 10x10 centré en 32 donc 32-5=27
+                'y': 18,
+                'size': 64,
             },
             'gsyn_exc' : {
                 'start' : 0,
@@ -180,7 +180,7 @@
         'py' : { # 'modKey':{modVal}
              'source' : sim.StepCurrentSource,
              'amplitude' : [.4, .0], # default
-             'start' : [1000., 2000.], # long duration
+             'start' : [1500., 2000.], # long duration
              'stop' : 0.0,
              #'cellidx' : [27,28,35,36],
              #'cellidx' : 50+(100*50), # On prend la cellule au milieu du carré donc on monte 50 lignes à partir d'en bas (sur un tableau de 100 cellules) puis on se décale à la 50eme colonne
