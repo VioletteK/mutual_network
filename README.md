@@ -53,15 +53,15 @@ The data are savec as a 100x100x511 list (sizexsizextime)
 Each algorithm starts by opening a folder and then analyses each set of data in it. 
 The parameters are the same as the one for simulation and the running is the same as well.
 
-## `Analysis_delay_2cells`
+### `Analysis_delay_2cells`
 Same as above 
 
-## `Analysis_diffusion_spont` :
+### `Analysis_diffusion_spont` :
 Plot time of max as a function of the annulus, linear regression and annulus plotting. 
 
-## `Analysis_gradient` :
+### `Analysis_gradient` :
 Same as simulation but without contour. 
 
-## `Analysis_nostim` and `Analysis_mouses` :
+### `Analysis_nostim` and `Analysis_mouses` :
 Plot VM and MI in the same figure, and can also do the analysis on the annulus. 
 
