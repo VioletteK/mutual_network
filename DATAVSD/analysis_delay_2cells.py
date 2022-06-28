@@ -18,9 +18,7 @@ RdBu = cm.get_cmap('RdBu_r', 256)
 # folder = '_Nostim_ trials with only spontaneous activity, second set of 10 trials/'
 folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
 #for i in range(11,21):
-# for i in range(1,11):
-# for i in [1]:
-for i in [2]:
+for i in range(1,11):
     file = 'Nostim_'+str(i)
     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
     with open(folder+file, 'r') as fr:
@@ -33,16 +31,8 @@ for i in [2]:
     run_time = 511
     size = 100
 
-    # injection_start,injection_end = 110,511
+
     injection_start,injection_end = 366,511
-    # injection_start,injection_end = 335,511
-    # injection_start,injection_end = 340,511
-    # injection_start,injection_end = 168,511
-    # injection_start,injection_end = 57,511
-    # injection_start,injection_end =
-    # injection_start,injection_end = 233,511
-    # injection_start,injection_end = 400,511
-    # injection_start,injection_end = 364,511
     x = 0
     y = 0
     window = 100
@@ -50,23 +40,13 @@ for i in [2]:
     injection_points=[5050]
     min_point, max_point = 50,50
 
-    # ref_neurone = [80,50]
-    # ref_neurone = [75,70]
-    ref_neurone = [85,55]
-    # ref_neurone = [30,5]
-    # ref_neurone = [0,99]
-    # ref_neurone = [12,62]
-    # ref_neurone = [,]
-    # ref_neurone = [99,82]
-    # ref_neurone = [75,99]
-    # ref_neurone = [52,99]
 
+    ref_neurone = [85,55]
     looked_neurone = [45,55]
 
     Time_delay = np.arange(-50,100,1)
     interval = 30
 
-    # RdBu = cm.get_cmap('RdBu', 256)
     header='/home/margauxvrech/mutual_network/DATAVSD/'
     newheader=folder+file +'data'
     if not os.path.exists(header+newheader):
@@ -77,7 +57,6 @@ for i in [2]:
 
     V = len(L)
 
-    # vm_base=[vm[t][50][50] for t in range(injection_start,injection_start+interval)]
     vm_base=[L[t][ref_neurone[0]][ref_neurone[1]] for t in range(injection_start,min(injection_start+interval,injection_end))]
     c_X,xedges = np.histogram(vm_base,500,range=(-0.1,0.02))
     MI_delay=[]
