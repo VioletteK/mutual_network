@@ -3,7 +3,7 @@ There is always two files for each analysis : the one for the injected cells and
 In the spontaneous ones, the parameters such as :
 - *injection_start*
 - *ref_neuron*
-- ...
+- ...                 
 must be entered by hand. 
 
 ## Simulation codes :
@@ -47,3 +47,6 @@ All the analysises start at the lign `if 'Vm'` ...
 - the *Time_delay* with when it starts, when it ends and the *step*
 It plots a map of the number of spikes for each neuron in the `time_window`, the mean number of spikes in the square window starting frow each neuron as its low left corner and the Vm. 
 
+
+## Mouses DATA
+The data are savec as a 100x100x511 list (sizexsizextime)
