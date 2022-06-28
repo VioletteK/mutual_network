@@ -34,7 +34,7 @@ for i in range(1,11):
     dt = 1
     run_time = 511
     size = 100
-    injection_start,injection_end = 0,511
+    injection_start,injection_end = 105,511
     interval = 5
     x = 0
     y = 0
@@ -51,7 +51,7 @@ for i in range(1,11):
         os.makedirs(header+newheader)
     print('\nAnalysing data of '+file)
     print('\nData will be saved in '+newheader)
-    Time_delay = np.arange(0,500,1)
+    Time_delay = np.arange(-5,25,1)
     V=len(L)
     # Recorded_cell = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
     Recorded_cell_brut = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
@@ -95,25 +95,25 @@ for i in range(1,11):
                 # vm_neurone = [vm[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
                 vm_neurone_brut = [L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
                 # c_Y,xedges = np.histogram(vm_neurone,200,range=(-0.1,0.02))#,density=True)
-                # c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
+                c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 # Recorded_cell[injection_start+time_delay][i][j]= mutual_info_score(c_X,c_Y)
-                # Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
+                Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
 
 
         fig=plt.figure()
         # fig.add_subplot(1,3,1)
-        plt.imshow(L[injection_start+time_delay],vmin=-0.01,vmax=0.016,cmap = 'viridis')
-        plt.colorbar()
-        plt.title('VM '+str(injection_start+time_delay))
-        plt.show()
+        # plt.imshow(L[injection_start+time_delay],vmin=-0.01,vmax=0.016,cmap = 'viridis')
+        # plt.colorbar()
+        # plt.title('VM '+str(injection_start+time_delay))
+        # plt.show()
 
         # fig.add_subplot(1,3,2)
         # Recorded_cell_filtered=accentuation1(signal.convolve2d(np.array(Recorded_cell_brut[injection_start+time_delay]),Kernel2, mode='same'))
-        # plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
-        # plt.clim([0,0.028])
-        # plt.colorbar()
+        plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
+        plt.clim([0,0.028])
+        plt.colorbar()
         # plt.contour(Recorded_cell_filtered,colors = 'r', linewidths=2)
-        # plt.title('MI brut '+str(injection_start+time_delay))
+        plt.title('MI brut '+str(injection_start+time_delay))
         # #
         # fig.add_subplot(1,3,3)
         #
@@ -143,7 +143,7 @@ for i in range(1,11):
         # # plt.quiver(X,Y,-V,U,color='white')
 
 
-        filename= '/VM_'+str(injection_start+time_delay)+'.png'
+        filename= '/MI_'+str(injection_start+time_delay)+'.png'
         fig.savefig(header+newheader+filename, transparent=True)
         plt.show(block=True)
         plt.close()
@@ -153,95 +153,95 @@ for i in range(1,11):
     #ANNULUS ANALYSIS
     ######################################################
 
-    print('\nPlotting the Annulus')
-
-
-
-    number_of_annulus = 21
-    interval = 30
-    # Time_maximum = []
-    # list_rho = []
-    Time_maximum1 = []
-    list_rho1 = []
-    # Time_maximum2 = []
-    # list_rho2 = []
-
-    Annulus = [[] for i in range(number_of_annulus)]
-
-    r = np.linalg.norm([50,50])
-
-    #this is the ray of the disk around our central cell
-    print('... the width of the annulus is '+ str(r/number_of_annulus))
-    #maybe no need to go to the border of the image
-    for a in range(number_of_annulus):
-        for i in range(100):
-            for j in range(100):
-                d = np.linalg.norm([i-50,j-50])
-                for a in range(number_of_annulus):
-                    if a* r/number_of_annulus<d<= (a+1)*r/number_of_annulus:
-                        Annulus[a].append([i,j])
-                        break
-
-    Annulus = list(filter(([]).__ne__, Annulus))
-
-
-
-    fig=plt.figure()
-    for A in Annulus :
-        MI_annulus = []
-        for time_delay in Time_delay :
-            MI_delay = []
-            for neuron in A :
-                MI_delay.append(Recorded_cell_brut[injection_start+time_delay][neuron[0]][neuron[1]])
-            MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
-        #
-
-        # MI_annulus_filtered=savgol_filter(MI_annulus, 15, 3)
-        MI_annulus_filtered=MI_annulus
-
-        # maxi = max(MI_annulus_filtered)
-        # Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
-        # list_rho.append(Annulus.index(A)* r/number_of_annulus)
-        maxi1 = max(MI_annulus)
-        Time_maximum1.append(Time_delay[list(MI_annulus).index(maxi1)])
-        list_rho1.append(Annulus.index(A))
-        plt.scatter(Time_delay,MI_annulus, color = cm.hsv(Annulus.index(A)/len(Annulus)),marker='x')#,linestyle='-.')
-        plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = cm.hsv(Annulus.index(A)/len(Annulus)))#,linestyle='-.')
-    plt.title('Mutual information')
-    plt.xlabel('Time delay')
-    plt.ylabel("MI")
-    plt.legend(frameon=False)
-    fig.savefig(header+newheader+'/MI_'+str(len(Annulus))+' anneaux'+'.png')
-    plt.close()
-    fig.clf()
-    #plot the Annulus
-    Annulus_plot = np.zeros((window, window))
-    for A in Annulus:
-        for neuron in A :
-            Annulus_plot[neuron[0]][neuron[1]]=Annulus.index(A)+2
-
-    fig1 = plt.figure()
-    plt.imshow(Annulus_plot, cmap = 'inferno',interpolation = 'none')
-    plt.colorbar()
-    plt.title('Annulus')
-    fig1.savefig(header+newheader+'/Annulus'+'.png')
-    plt.close()
-    fig1.clf()
-
-    fig2 = plt.figure()
-
-    plt.plot(list_rho1,Time_maximum1,'x')
-    lr = scipy.stats.linregress(list_rho1,Time_maximum1)
-    y=[lr[0]*i+lr[1] for i in list_rho1]
-    plt.plot(list_rho1,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
-    plt.show()
-    plt.legend()
-    plt.title('Maximum brut')
-
-
-    fig2.savefig(header+newheader+'/Maximum'+'.png')
-    plt.close()
-    fig2.clf()
-
-    carac_time = np.mean([Time_maximum1[i+1]-Time_maximum1[i] for i in range(len(Time_maximum1)-1)])
-    print("Le temps caracteristique est "+ str(carac_time)+ 'et la vitesse est donc :'+str(round(lr[0]**2*carac_time/100,3)))
+    # print('\nPlotting the Annulus')
+    #
+    #
+    #
+    # number_of_annulus = 21
+    # interval = 30
+    # # Time_maximum = []
+    # # list_rho = []
+    # Time_maximum1 = []
+    # list_rho1 = []
+    # # Time_maximum2 = []
+    # # list_rho2 = []
+    #
+    # Annulus = [[] for i in range(number_of_annulus)]
+    #
+    # r = np.linalg.norm([50,50])
+    #
+    # #this is the ray of the disk around our central cell
+    # print('... the width of the annulus is '+ str(r/number_of_annulus))
+    # #maybe no need to go to the border of the image
+    # for a in range(number_of_annulus):
+    #     for i in range(100):
+    #         for j in range(100):
+    #             d = np.linalg.norm([i-50,j-50])
+    #             for a in range(number_of_annulus):
+    #                 if a* r/number_of_annulus<d<= (a+1)*r/number_of_annulus:
+    #                     Annulus[a].append([i,j])
+    #                     break
+    #
+    # Annulus = list(filter(([]).__ne__, Annulus))
+    #
+    #
+    #
+    # fig=plt.figure()
+    # for A in Annulus :
+    #     MI_annulus = []
+    #     for time_delay in Time_delay :
+    #         MI_delay = []
+    #         for neuron in A :
+    #             MI_delay.append(Recorded_cell_brut[injection_start+time_delay][neuron[0]][neuron[1]])
+    #         MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
+    #     #
+    #
+    #     # MI_annulus_filtered=savgol_filter(MI_annulus, 15, 3)
+    #     MI_annulus_filtered=MI_annulus
+    #
+    #     # maxi = max(MI_annulus_filtered)
+    #     # Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
+    #     # list_rho.append(Annulus.index(A)* r/number_of_annulus)
+    #     maxi1 = max(MI_annulus)
+    #     Time_maximum1.append(Time_delay[list(MI_annulus).index(maxi1)])
+    #     list_rho1.append(Annulus.index(A))
+    #     plt.scatter(Time_delay,MI_annulus, color = cm.hsv(Annulus.index(A)/len(Annulus)),marker='x')#,linestyle='-.')
+    #     plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = cm.hsv(Annulus.index(A)/len(Annulus)))#,linestyle='-.')
+    # plt.title('Mutual information')
+    # plt.xlabel('Time delay')
+    # plt.ylabel("MI")
+    # plt.legend(frameon=False)
+    # fig.savefig(header+newheader+'/MI_'+str(len(Annulus))+' anneaux'+'.png')
+    # plt.close()
+    # fig.clf()
+    # #plot the Annulus
+    # Annulus_plot = np.zeros((window, window))
+    # for A in Annulus:
+    #     for neuron in A :
+    #         Annulus_plot[neuron[0]][neuron[1]]=Annulus.index(A)+2
+    #
+    # fig1 = plt.figure()
+    # plt.imshow(Annulus_plot, cmap = 'inferno',interpolation = 'none')
+    # plt.colorbar()
+    # plt.title('Annulus')
+    # fig1.savefig(header+newheader+'/Annulus'+'.png')
+    # plt.close()
+    # fig1.clf()
+    #
+    # fig2 = plt.figure()
+    #
+    # plt.plot(list_rho1,Time_maximum1,'x')
+    # lr = scipy.stats.linregress(list_rho1,Time_maximum1)
+    # y=[lr[0]*i+lr[1] for i in list_rho1]
+    # plt.plot(list_rho1,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
+    # plt.show()
+    # plt.legend()
+    # plt.title('Maximum brut')
+    #
+    #
+    # fig2.savefig(header+newheader+'/Maximum'+'.png')
+    # plt.close()
+    # fig2.clf()
+    #
+    # carac_time = np.mean([Time_maximum1[i+1]-Time_maximum1[i] for i in range(len(Time_maximum1)-1)])
+    # print("Le temps caracteristique est "+ str(carac_time)+ 'et la vitesse est donc :'+str(round(lr[0]**2*carac_time/100,3)))

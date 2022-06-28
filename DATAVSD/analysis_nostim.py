@@ -16,10 +16,11 @@ RdBu = cm.get_cmap('RdBu_r', 256)
 listcolor=["black","brown","darkred","red","orangered","darkorange","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
 number_of_annulus = 21
 
-folder = '_Nostim_ trials with only spontaneous activity, second set of 10 trials/'
-# folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
-for i in range(11,21):
+# folder = '_Nostim_ trials with only spontaneous activity, second set of 10 trials/'
+folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
+# for i in range(11,21):
 # for i in range(1,11):
+for i in [2]:
     file = 'Nostim_'+str(i)
     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
     with open(folder+file, 'r') as fr:
@@ -33,15 +34,15 @@ for i in range(11,21):
     dt = 1
     run_time = 511
     size = 100
-    injection_start,injection_end = 0,511
-    interval = 5
+    injection_start,injection_end = 366,511
+    interval = 20
     x = 0
     y = 0
     window = 100
     list_coord = [(x+i)*size+(y+j) for j in range(window) for i in range(window)]
-    injection_points=[5050]
-    min_point, max_point = 50,50
-    ref_neurone = [50,50]
+    injection_points=[8555]
+    min_point, max_point = 85,50
+    ref_neurone = [85,50]
 
     # RdBu = cm.get_cmap('RdBu', 256)
     header='/home/margauxvrech/mutual_network/DATAVSD/'
@@ -50,7 +51,7 @@ for i in range(11,21):
         os.makedirs(header+newheader)
     print('\nAnalysing data of '+file)
     print('\nData will be saved in '+newheader)
-    Time_delay = np.arange(0,511,1)
+    Time_delay = np.arange(-5,25,1)
     V=len(L)
     # Recorded_cell = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
     Recorded_cell_brut = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
@@ -82,9 +83,9 @@ for i in range(11,21):
     # vm=filtered_L
 
     # vm_base=[vm[t][50][50] for t in range(injection_start,injection_start+interval)]
-    # vm_base_brut=[L[t][50][50] for t in range(injection_start,injection_start+interval)]
+    vm_base_brut=[L[t][50][50] for t in range(injection_start,injection_start+interval)]
     # c_X,xedges = np.histogram(vm_base,200,range=(-0.1,0.02))
-    # c_X_brut,xedges = np.histogram(vm_base_brut,200,range=(-0.1,0.02))
+    c_X_brut,xedges = np.histogram(vm_base_brut,200,range=(-0.1,0.02))
     VM_moyen=[np.mean([L[injection_start+t][i] for i in range(100)]) for t in Time_delay]
     fig=plt.figure()
     plt.plot(Time_delay,VM_moyen)
@@ -95,30 +96,31 @@ for i in range(11,21):
 
     print('Plotting VM ...')
     for time_delay in Time_delay:
-    #     for i in range(window):
-    #         for j in range(window):
+        for i in range(window):
+            for j in range(window):
                 # vm_neurone = [vm[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
-                # vm_neurone_brut = [L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
+                vm_neurone_brut = [L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
                 # c_Y,xedges = np.histogram(vm_neurone,200,range=(-0.1,0.02))#,density=True)
-                # c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
+                c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 # Recorded_cell[injection_start+time_delay][i][j]= mutual_info_score(c_X,c_Y)
-                # Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
+                Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
 
 
         fig=plt.figure()
-        # fig.add_subplot(1,3,1)
+        fig.add_subplot(1,2,1)
         plt.imshow(L[injection_start+time_delay],cmap = 'viridis',vmin=0,vmax=0.008)
         plt.colorbar()
         plt.title('VM '+str(injection_start+time_delay))
         plt.show()
 
-        # fig.add_subplot(1,3,2)
+        fig.add_subplot(1,2,2)
+        Recorded_cell_brut[injection_start+time_delay][85][55]= 1
         # Recorded_cell_filtered=accentuation1(signal.convolve2d(np.array(Recorded_cell_brut[injection_start+time_delay]),Kernel2, mode='same'))
-        # plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
-        # plt.clim([0,0.028])
-        # plt.colorbar()
+        plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
+        plt.clim([0,0.15])
+        plt.colorbar()
         # plt.contour(Recorded_cell_filtered,colors = 'r', linewidths=2)
-        # plt.title('MI brut '+str(injection_start+time_delay))
+        plt.title('MI brut '+str(injection_start+time_delay))
         # #
         # fig.add_subplot(1,3,3)
         #
@@ -148,7 +150,7 @@ for i in range(11,21):
         # plt.quiver(X,Y,-V,U,color='white')
 
 
-        filename= '/VM'+str(injection_start+time_delay)+'.png'
+        filename= '/VM_MI_'+str(injection_start+time_delay)+'.png'
         fig.savefig(header+newheader+filename, transparent=True)
         plt.show(block=True)
         plt.close()
