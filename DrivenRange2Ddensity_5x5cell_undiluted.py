@@ -1,6 +1,6 @@
 {
 
-    'run_time': 5000, # ms
+    'run_time': 3000, # ms
     'dt': 0.1, # ms
 
     'Populations' : {
