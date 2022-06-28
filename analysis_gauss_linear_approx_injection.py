@@ -214,8 +214,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     list_rho = []
                     Time_maximum1 = []
                     list_rho1 = []
-                    Time_maximum2 = []
-                    list_rho2 = []
+
 
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']

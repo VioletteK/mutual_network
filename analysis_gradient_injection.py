@@ -344,7 +344,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     #Plotting mean MI
                     fig = plt.figure()
 
-                    plt.imshow([[np.mean([Recorded_cell[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.4, cmap = 'viridis')
+                    plt.imshow([[np.mean([Recorded_cell[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.2, cmap = 'viridis')
                     plt.colorbar()
                     plt.title('MI_mean')
 
