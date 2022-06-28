@@ -1,8 +1,9 @@
 # How does the analysis work ?
+There is always two files for each analysis : the one for the injected cells and the one for spontaneous activity.
 
-Starting at the lign `if 'Vm'` ...
+All the analysises start at the lign `if 'Vm'` ...
 
-
+## `Analysis_gauss` :
 
 **Definition of the parameters by hand** :
 - the *interval* on which we will calculate the MI
@@ -16,3 +17,6 @@ Starting at the lign `if 'Vm'` ...
  Then for each time, calculate the mean MI on each annulus.
  After it, it saves the time when the max of the MI occurs for each annulus and plot it (for the raw and filtered with `savgol_filter` data) with a linear regression.
  The slope of the obtained line is the *speed of diffusion*.
+
+## `Analysis_colormap_vm` :
+ It plots the colormap of Vm at each time and can also plot the vm of each neuron as a function of time.
