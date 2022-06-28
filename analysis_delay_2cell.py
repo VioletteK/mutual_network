@@ -217,7 +217,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     V=len(vm)
                     max_time = run_time-injection_start-interval
                     vm=vm.T
-                    #Time_delay = np.arange(0,max_time,interval)
+
                     Time_delay = np.arange(-200,1000,1)
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
                     c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
@@ -256,7 +256,6 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.ylabel("Vm")
 
                     fig.savefig(folder+'/'+str(params['Populations']['py']['cellparams']['tau_w'])+'MI Vm neurone de ref' +'.png')
-                    #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
 

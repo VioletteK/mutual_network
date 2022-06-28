@@ -201,7 +201,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 30
+                    interval = 70
 
 
                     x = params['Recorders']['py']['v']['x']
@@ -226,8 +226,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     max_time = run_time-injection_start-interval
                     #Time_delay = np.arange(0,max_time,interval)
                     #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-40,100,2)
-                    #the windows where we calculate the MI have to intersect !!!
+                    Time_delay = np.arange(-40,100,10)
+                    #the windows where we calculate the MI have to intersect
+                    
                     def dist(neurone,ref_neurone):
                         '''euclidian distance'''
                         x = neurone//size

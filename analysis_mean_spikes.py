@@ -223,6 +223,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     time_window = 10
                     precision = 3
+                    #The size of the square on which we calculate the mean number of spikes
 
                     vm=vm.T
 
@@ -239,14 +240,13 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
 
-                    #The question is Do we partitionate our recordedcell into different window or for each neurone, we calculate ?
+
                     for t in Time_delay :
                         number_spikes = np.zeros((window,window))
                         Vm_i=np.zeros((window,window))
                         for i in range(window**2):
-                            # number_spikes[i//window][i%window] = list(vm[i][t:t+time_window]).count(-40)
-                            number_spikes[i//window][i%window] = Number_Spikes(vm[i][int(t/dt):int((t+time_window)/dt)])
-                            Vm_i[i//window][i%window] = np.mean([vm[i][k] for k in range(int(t//dt),min(int((t+time_window)//dt),len(vm)))])
+                            number_spikes[i%window][i//window] = Number_Spikes(vm[i][int(t/dt):int((t+time_window)/dt)])
+                            Vm_i[i%window][i//window] = np.mean([vm[i][k] for k in range(int(t//dt),min(int((t+time_window)//dt),len(vm)))])
                         mean_number_spikes = np.zeros((window,window))
                         for i in range(window):
                             for j in range(window):
@@ -269,6 +269,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         plt.title('Mean spike : window of '+str(precision)+' in the time window '+str(t)+','+str(t+time_window))
                         plt.colorbar()
                         plt.clim([0,1])
+
                         fig.add_subplot(3,1,1)
                         plt.imshow(number_spikes, cmap = 'inferno',interpolation='none')
                         plt.title('Number of spikes : window of '+str(precision)+' in the time window '+str(t)+','+str(t+time_window))

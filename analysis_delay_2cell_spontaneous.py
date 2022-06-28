@@ -209,20 +209,19 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
 
-                    #the center of the annulus
+                    #the two neurons we are looking at
                     ref_neurone = [58,13]
                     looked_neurone = [54,13]
 
                     V=len(vm)
                     max_time = run_time-injection_start-interval
                     vm=vm.T
-                    #Time_delay = np.arange(0,max_time,interval)
+
                     Time_delay = np.arange(-200,1000,5)
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
                     c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
                     MI_delay=[]
                     for time_delay in Time_delay :
-
                         vm_neurone = vm[list_coord.index(looked_neurone[0]*size+looked_neurone[1])][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                         c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))
                         MI_delay.append(mutual_info_score(c_X,c_Y))
@@ -255,7 +254,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.ylabel("Vm")
 
                     fig.savefig(folder+'/'+str(params['Populations']['py']['cellparams']['tau_w'])+'MI Vm neurone de ref' +'.png')
-                    #fig.savefig(folder+'/Mutual Information avec '+str(number_of_annulus)+' anneaux' +'.png')
+
                     plt.close()
                     fig.clf()
 

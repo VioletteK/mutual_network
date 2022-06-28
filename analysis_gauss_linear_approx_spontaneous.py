@@ -100,23 +100,7 @@ class MidpointNormalize(mpl.colors.Normalize):
         return np.ma.masked_array(np.interp(value, x, y))
 
 
-def gauss(x, H, A, x0, sigma):
-    return H + A * np.exp(-(x - x0) ** 2 / (2 * sigma ** 2))
 
-def gauss_fit(x, y):
-    mean = sum(x * y) / sum(y)
-    sigma = np.sqrt(sum(y * (x - mean) ** 2) / sum(y))
-    popt, pcov = curve_fit(gauss, x, y, p0=[min(y), max(y), mean, sigma])
-    return popt
-
-def Gamma(x,H,A,k,theta):
-    return H + A *((np.sqrt(x+45))**(k-1)*np.exp(-np.sqrt(x+45)/theta))/(scipy.special.gamma(k)*theta**k)
-
-def Gamma_fit(x, y):
-    mean = sum(x * y) / sum(y)
-    sigma = np.sqrt(sum(y * (x - mean) ** 2) / sum(y))
-    popt, pcov = curve_fit(Gamma, x, y, p0=[min(y), max(y), mean, sigma])
-    return popt
 # ------------------------------------------------------------------------------
 
 
@@ -220,9 +204,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = 1400,3000
                     interval = 80
-                    listcolor=["black","brown","darkred","red","orangered","darkorange","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
+                    #the interval on which the MI will be computed
                     number_of_annulus = 10
+                    #in how many parts will the disk be divided
 
+                    #lists to save he time where the maximum occurs for each annulus
                     Time_maximum = []
                     list_rho=[]
                     Time_maximum1 = []
@@ -236,7 +222,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
 
 
-
+                    #the central neuron
                     x_ref = 46
                     y_ref = 14
                     index = int(x_ref*window + y_ref)
@@ -254,11 +240,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     r=15
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
-                    #maybe no need to go to the border of the image
 
 
 
 
+                    #each neuron assigned to an annulus
                     for neuron in list_coord:
                         d = dist(neuron,ref_neurone)
                         for i in range(number_of_annulus):
@@ -266,15 +252,14 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 Annulus[i].append(neuron)
                                 break
                     Annulus = list(filter(([]).__ne__, Annulus))
-
-
-
                     #we delete the empty lists
+
+
+
                     max_time = run_time-injection_start-interval
-                    #Time_delay = np.arange(0,max_time,interval)
-                    #Time_delay = np.arange(-100,1000,interval)
+
                     Time_delay = np.arange(-300,500,5)
-                    #the windows where we calculate the MI have to intersect !!!
+                    #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start/dt):int((injection_start+interval)/dt)]
@@ -289,8 +274,6 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         for time_delay in Time_delay :
                             MI_delay = []
                             for neuron in A :
-                                #print('Neurone' +str(neuron))
-                                #vm_neurone = vm[list_coord.index(neuron)][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                                 vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
 
                                 #calcul mutual Information between a and neuron
@@ -299,26 +282,13 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 MI_delay.append(mutual_info_score(c_X,c_Y))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
-                        # MI_annulus_filtered=MI_annulus
+
                         MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
-                        ###Gaussian Fit
-                        #
-                        # H, Aa, x0, sigma = gauss_fit(Time_delay, MI_annulus_filtered)
-                        #
-                        # fit_y = gauss(Time_delay, H, Aa, x0, sigma)
-                        # H,Aa,k,theta = Gamma_fit(Time_delay, MI_annulus)
-                        # H,Aa,k,theta = curve_fit(Gamma, Time_delay, MI_annulus, p0=[min(MI_annulus),max(MI_annulus)/0.2,2,2])[0]
-
-                        # fit_y = Gamma(Time_delay,H,Aa, k, theta)
-
-
-
-
-                        # plt.plot(Time_delay, fit_y, color = listcolor[Annulus.index(A)])
-                        # linestyle='-.',
                         if Annulus.index(A)%1==0:
+                            #only plotting one annulus for two to lighten the graph
                             plt.plot(Time_delay,MI_annulus, color = mpcm.hsv(Annulus.index(A)/(len(Annulus))),label='Anneau '+str(Annulus.index(A)),marker = 'x')#,linestyle='-.')
-                            # plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = mpcm.hsv(Annulus.index(A)/(len(Annulus)))#,linestyle='-.')
+
+                            #recording the time where the max occurs
                             maxi = max(MI_annulus_filtered)
                             Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
                             list_rho.append(Annulus.index(A)* r/number_of_annulus)
@@ -333,6 +303,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     fig.savefig(folder+'/'+str(ref_neurone)+'_Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
+
                     #plot the Annulus
                     Recorded_cell = np.zeros((window, window))
                     for j in range(window**2):
@@ -348,6 +319,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.close()
                     fig1.clf()
 
+                    #plotting time of max in function of each annulus 
                     fig2 = plt.figure()
                     plt.plot(list_rho,Time_maximum,'x')
                     lr = scipy.stats.linregress(list_rho,Time_maximum)

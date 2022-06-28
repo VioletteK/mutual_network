@@ -100,23 +100,7 @@ class MidpointNormalize(mpl.colors.Normalize):
         return np.ma.masked_array(np.interp(value, x, y))
 
 
-def gauss(x, H, A, x0, sigma):
-    return H + A * np.exp(-(x - x0) ** 2 / (2 * sigma ** 2))
 
-def gauss_fit(x, y):
-    mean = sum(x * y) / sum(y)
-    sigma = np.sqrt(sum(y * (x - mean) ** 2) / sum(y))
-    popt, pcov = curve_fit(gauss, x, y, p0=[min(y), max(y), mean, sigma])
-    return popt
-
-def Gamma(x,H,A,k,theta):
-    return H + A *((np.sqrt(x+45))**(k-1)*np.exp(-np.sqrt(x+45)/theta))/(scipy.special.gamma(k)*theta**k)
-
-def Gamma_fit(x, y):
-    mean = sum(x * y) / sum(y)
-    sigma = np.sqrt(sum(y * (x - mean) ** 2) / sum(y))
-    popt, pcov = curve_fit(Gamma, x, y, p0=[min(y), max(y), mean, sigma])
-    return popt
 # ------------------------------------------------------------------------------
 
 
@@ -219,9 +203,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 50
-                    listcolor=["black","brown","darkred","red","orangered","darkorange","orange","gold","yellowgreen","limegreen","green","cyan","royalblue","navy","dodgerblue","indigo","purple","magenta","deeppink","hotpink","crimson"]
-                    number_of_annulus = 10
+                    interval = 80
+                    #the interval on which the MI is calculated
+                    number_of_annulus = 11
+                    #in how many parts will be the ray r divided
 
 
 
@@ -257,15 +242,16 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=10
+                    r=11
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
-                    #maybe no need to go to the border of the image
+
 
 
 
 
                     for neuron in list_coord:
+                        #adding each neuron but those in the injected cells in an annulus
                         if not neuron in injection_points :
                             d = dist(neuron,ref_neurone)
                             for i in range(number_of_annulus):
@@ -278,10 +264,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     #we delete the empty lists
                     max_time = run_time-injection_start-interval
-                    #Time_delay = np.arange(0,max_time,interval)
-                    #Time_delay = np.arange(-100,1000,interval)
-                    Time_delay = np.arange(-100,250,3)
-                    #the windows where we calculate the MI have to intersect !!!
+
+                    Time_delay = np.arange(-100,200,3)
+                    #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
                     vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start//dt):int((injection_start+interval)//dt)]
@@ -296,8 +281,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         for time_delay in Time_delay :
                             MI_delay = []
                             for neuron in A :
-                                #print('Neurone' +str(neuron))
-                                #vm_neurone = vm[list_coord.index(neuron)][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
+
                                 vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)//dt):int((injection_start+time_delay+interval)//dt)]
 
                                 #calcul mutual Information between a and neuron
@@ -305,47 +289,24 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                                 MI_delay.append(mutual_info_score(c_X,c_Y))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
-                        #
-                        # MI_annulus_filtered=MI_annulus
-                        MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
-                        ###Gaussian Fit
-                        #
-                        # H, Aa, x0, sigma = gauss_fit(Time_delay, MI_annulus)
-                        # H, Aa, x0, sigma = curve_fit(gauss,Time_delay, MI_annulus, p0 = [min(MI_annulus), max(MI_annulus),80,1])[0]
-                        # fit_y = gauss(Time_delay, H, Aa, x0, sigma)
-                        # H,Aa,k,theta = Gamma_fit(Time_delay, MI_annulus)
-                        # H,Aa,k,theta = curve_fit(Gamma, Time_delay, MI_annulus, p0=[min(MI_annulus),max(MI_annulus)/0.2,2,2])[0]
 
-                        # fit_y = Gamma(Time_delay,H,Aa, k, theta)
-                        if Annulus.index(A)>2:
+
+                        MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
+
+                        if Annulus.index(A)>1:
 
                             maxi = max(MI_annulus_filtered)
                             Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
                             list_rho.append(Annulus.index(A)* r/number_of_annulus)
+                            #we take the time of the max in the filtered MI
 
                             maxi1 = max(MI_annulus)
                             Time_maximum1.append(Time_delay[list(MI_annulus).index(maxi1)])
                             list_rho1.append(Annulus.index(A))
+                            #we take the time of the max in the MI
 
-                            # maxi2 = max(fit_y)
-                            # Time_maximum2.append(Time_delay[list(fit_y).index(maxi2)])
-                            # list_rho2.append(Annulus.index(A))
-                            # if Annulus.index(A)%2==0:
-
-                                # plt.plot(Time_delay, fit_y, color = listcolor[Annulus.index(A)])
-                                # linestyle='-.',
-                                # plt.scatter(Time_delay,MI_annulus, color = listcolor[Annulus.index(A)],marker='x')#,linestyle='-.')
-                                # plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = listcolor[Annulus.index(A)])#,linestyle='-.')
-                            plt.scatter(Time_delay,MI_annulus, color = mpcm.hsv(Annulus.index(A)/(len(Annulus))),marker='x')#,linestyle='-.')
-                            plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = mpcm.hsv(Annulus.index(A)/(len(Annulus))))#,linestyle='-.')
-                    # plt.plot([40 for i in range(100)],np.linspace(0.1,0.32,100), color = mpcm.hsv(7/len(Annulus)))
-                    # plt.plot([45 for i in range(100)],np.linspace(0.1,0.30,100), color = mpcm.hsv(8/len(Annulus)))
-                    # plt.plot([45 for i in range(100)],np.linspace(0.1,0.26,100), color = mpcm.hsv(9/len(Annulus)))
-                    # plt.plot([55 for i in range(100)],np.linspace(0.1,0.24,100), color = mpcm.hsv(10/len(Annulus)))
-                    # plt.plot([60 for i in range(100)],np.linspace(0.1,0.22,100), color = mpcm.hsv(11/len(Annulus)))
-                    # plt.plot([60 for i in range(100)],np.linspace(0.1,0.21,100), color = mpcm.hsv(12/len(Annulus)))
-                    # plt.plot([65 for i in range(100)],np.linspace(0.1,0.20,100), color = mpcm.hsv(13/len(Annulus)))
-                    # plt.plot([65 for i in range(100)],np.linspace(0.1,0.18,100), color = mpcm.hsv(14/len(Annulus)))
+                            plt.scatter(Time_delay,MI_annulus, color = mpcm.hsv(Annulus.index(A)/(len(Annulus))),marker='x')
+                            plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = mpcm.hsv(Annulus.index(A)/(len(Annulus))))
 
 
 
@@ -354,10 +315,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.ylabel("MI")
                     plt.legend(frameon=False)
                     fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
-
                     # fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
                     plt.close()
                     fig.clf()
+
                     #plot the Annulus
                     Recorded_cell = np.zeros((window, window))
                     for j in range(window**2):
@@ -372,13 +333,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.close()
                     fig1.clf()
 
+                    #plotting the diffusion with classic MI
                     fig2 = plt.figure()
-                    # X = [7,8,9,10,11,12,13,14]
-                    # Y = [40,45,45,55,60,60,65,65]
-                    # plt.plot(X,Y,'x')
-                    # lr = scipy.stats.linregress(X,Y)
-                    # y=[lr[0]*i+lr[1] for i in X]
-                    # plt.plot(X,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.plot(list_rho1,Time_maximum1,'x')
                     lr = scipy.stats.linregress(list_rho1,Time_maximum1)
                     y=[lr[0]*i+lr[1] for i in list_rho1]
@@ -390,13 +346,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.close()
                     fig2.clf()
 
+                    #plotting the diffusion with filtered MI
                     fig2 = plt.figure()
-                    # X = [7,8,9,10,11,12,13,14]
-                    # Y = [40,45,45,55,60,60,65,65]
-                    # plt.plot(X,Y,'x')
-                    # lr = scipy.stats.linregress(X,Y)
-                    # y=[lr[0]*i+lr[1] for i in X]
-                    # plt.plot(X,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.plot(list_rho,Time_maximum,'x')
                     lr = scipy.stats.linregress(list_rho,Time_maximum)
                     y=[lr[0]*i+lr[1] for i in list_rho]
@@ -409,7 +360,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     fig2.clf()
 
                     carac_time = np.mean([Time_maximum[i+1]-Time_maximum[i] for i in range(len(Time_maximum)-1)])
-                    print("Le temps caractéristique est "+ str(carac_time)+ 'et la vitesse est donc :'+str(lr[0]**2*carac_time))
+                    print("Caracteristic time is "+ str(carac_time)+ ' so the speed is :'+str(lr[0]**2*carac_time))
 
 
 

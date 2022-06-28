@@ -176,22 +176,21 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     interval = 10
-                    for i in range(0,int(run_time//dt),interval):
+
+                    for i in range(10000,int(run_time//dt),interval):
                     #for i in range(int(injection_start//dt),int((injection_end+100)//dt),interval):
-                        #clearly too long...
                         #a colormap each interval*dt from the injection's beginning
                         Vm_i=np.zeros((size,size)) #our future colormap
                         for j in range(size**2):
-                            # Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,min(i+interval,len(vm)))])
-                            Vm_i[j%size][j//size] = vm[i][j]
-                        #is the image transposed ?
+                            Vm_i[j%size][j//size] = np.mean([vm[k][j] for k in range(i,min(i+interval,len(vm)))])
+                            # Vm_i[j%size][j//size] = vm[i][j]
                         fig = plt.figure()
                         plt.imshow(Vm_i, cmap=matplotlib.cm.get_cmap('RdBu_r'),interpolation='none',vmin=-80,vmax=-50)
                         plt.colorbar()
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
                         plt.title('window ['+str(round(tmin,3))+':'+str(round(tmax,3))+'] ms')
-                        fig.savefig(folder+'/Colormap'+str(i)+'.png', transparent=True)
+                        fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Colormap'+str(i)+'.png', transparent=True)
                         plt.close()
                         fig.clf()
                     ##### Vm plot

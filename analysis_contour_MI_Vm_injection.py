@@ -209,7 +209,6 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     y = params['Recorders']['py']['v']['y']
                     window = params['Recorders']['py']['v']['size']+1
                     X, Y = np.meshgrid([i for i in range(window)],[i for i in range(window)])
-                    #list_coord = [(x+i)*size+(y+j) for i in range(window) for j in range(window)]
                     list_coord = [(x+i)*size+(y+j) for j in range(window) for i in range(window)]
                     #Here is a list of the ancient coord at the index of their new
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
@@ -219,6 +218,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     #the 'center' of the annulus taken as the central point of all the cells
                     ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
+
+                    #Gaussian Blur
                     Kernel1 = 1/16*np.array([
                     [1,2,1],
                     [2,4,2],
@@ -226,123 +227,56 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     ])
 
                     def accentuation1(x):
+                        ''' this function amplifies the high values and decreases the low ones '''
                         return 0.2*(np.tanh(10*x-2)+1)
+
 
                     def accentuation2(x):
                         return 0.2*(np.tanh((10*x-2)**3)+1)
 
 
-                    # # Kernel1 =np.array([
-                    # # [0,-1,0],
-                    # # [-1,5,-1],
-                    # # [0,-1,0]
-                    # # ])
-                    # Kernel2 = np.array([
-                    # [0,1,0],
-                    # [1,-4,1],
-                    # [0,1,0]
-                    # ])
                     Recorded_cell = np.zeros((window, window))
+                    #The MI matrix
+
                     Vm_t = np.zeros((window,window))
+                    #The Vm matrix
 
 
                     max_time = run_time-injection_start-interval
-                    #Time_delay = np.arange(0,max_time,interval)
-                    #Time_delay = np.arange(-100,1000,interval)
+
                     Time_delay = np.arange(-100,800,10)
-                    #the windows where we calculate the MI have to intersect !!!
+                    #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
+
                     indice = list_coord.index(ref_neurone[0]*size+ref_neurone[1])
                     vm_base = vm[indice][int(injection_start/dt):int((injection_start+interval)/dt)]
                     #list of the vm values of the central neuron beetween the beginning of the injection and beginnin+interval
+
                     c_X,xedges = np.histogram(vm_base,500,range=(-90.,-40.))
                     #every interval (ms) we calculate the MI
                     for time_delay in Time_delay:
                         for i in range(window**2):
-                            # #i is the lign
-                            # for j in range(window):
-                            #     #this is the column
-                            #     #vm_neurone = vm[i*window+j][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                             vm_neurone = vm[i][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
                             c_Y,xedges = np.histogram(vm_neurone,500,range=(-90.,-40.))#,density=True)
-                            Recorded_cell[i//window][i%window]= mutual_info_score(c_X,c_Y)
-                            # Recorded_cell[i//window][i%window]= accentuation2(mutual_info_score(c_X,c_Y))
-                            Vm_t[i//window][i%window] = np.mean(vm_neurone)
-                        # # Recorded_cell2=signal.convolve2d(Recorded_cell,Kernel2, mode='same')
-                        Recorded_cell[indice//window][indice%window]=0.4
+                            Recorded_cell[i%window][i//window]= mutual_info_score(c_X,c_Y)
+                            Vm_t[i%window][i//window] = np.mean(vm_neurone)
 
+
+                        Recorded_cell[indice%window][indice//window]=0.4
+                        #Set up this value to see the central neuron
+
+                        Recorded_cell1=signal.convolve2d(accentuation1(Recorded_cell),Kernel1, mode='same')
+                        #This is the colormap of accentuated and then blurred MI to obtain a good contouring
 
                         fig=plt.figure()
-                        fig.add_subplot(4,2,1)
                         plt.imshow(Recorded_cell, cmap = 'inferno',interpolation='none')
                         plt.clim([0,0.4])
-                        [U,V]=np.gradient(Recorded_cell)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.contour(Recorded_cell)
-                        # plt.colorbar()
-
-                        Recorded_cell1=signal.convolve2d(Recorded_cell,Kernel1, mode='same')
-                        Recorded_cell1[indice//window][indice%window]=0.4
-
-                        fig.add_subplot(4,2, 2)
-                        plt.imshow(Recorded_cell1, cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
-                        plt.contour(Recorded_cell1)
-                        [U,V]=np.gradient(Recorded_cell1)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.colorbar()
-
-                        Recorded_cell2 = accentuation1(Recorded_cell)
-                        Recorded_cell2[indice//window][indice%window]=0.4
-
-                        fig.add_subplot(4,2, 3)
-                        plt.imshow(Recorded_cell2, cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
-                        [U,V]=np.gradient(Recorded_cell2)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.contour(Recorded_cell2)
-                        # plt.colorbar()
-
-                        Recorded_cell2_1=signal.convolve2d(Recorded_cell2,Kernel1, mode='same')
-                        Recorded_cell2_1[indice//window][indice%window]=0.4
-
-                        fig.add_subplot(4,2, 4)
-                        plt.imshow(Recorded_cell2_1, cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
-                        plt.contour(Recorded_cell2_1)
-                        X, Y = np.meshgrid([i for i in range(window)],[i for i in range(window)])
-                        [U,V]=np.gradient(Recorded_cell2_1)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.colorbar()
-
-                        Recorded_cell3 = accentuation2(Recorded_cell)
-                        Recorded_cell3[indice//window][indice%window]=0.4
-
-                        fig.add_subplot(4,2, 5)
-                        plt.imshow(Recorded_cell3, cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
-                        [U,V]=np.gradient(Recorded_cell3)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.contour(Recorded_cell3)
-
-                        Recorded_cell3_1=signal.convolve2d(Recorded_cell3,Kernel1, mode='same')
-                        Recorded_cell3_1[indice//window][indice%window]=0.4
-
-                        # plt.colorbar()
-                        fig.add_subplot(4,2, 6)
-                        plt.imshow(Recorded_cell3_1, cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.4])
-                        plt.contour(Recorded_cell3_1)
-                        [U,V]=np.gradient(Recorded_cell3_1)
-                        plt.quiver(X,Y,-V,U,color='white')
-                        # plt.colorbar()
-
-
+                        plt.contour(Recorded_cell1, 5)
+                        plt.colorbar()
                         tmin=float(i*dt)
                         tmax=float((i+interval)*dt)
-                        plt.show(block=True)
-                        #plt.title('MI Vm'+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
+                        plt.title('MI '+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
                         fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Convolution'+str(time_delay)+'.png')
                         plt.close()
                         fig.clf()

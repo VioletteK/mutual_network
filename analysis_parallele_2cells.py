@@ -195,11 +195,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     print('Vm')
                     dt = params['dt']
                     run_time = params['run_time']
-                    # Define the Annulus supposing the injection points are forming a square
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 40
-                    listcolor=["brown","red","darkorange","orange","gold","yellowgreen","limegreen","green","navy","dodgerblue","orangered"]
+                    interval = 70
+                    #interval on which the vm is calculated
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
                     window = params['Recorders']['py']['v']['size']+1
@@ -210,11 +209,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     injection_points=params['Injections']['py']['cellidx']
                     min_point, max_point = min(injection_points)//size,max(injection_points)//size
 
-                    neuron_looked = 21*5+10
+                    neuron_looked = 30*64+10
 
                     #the center of the annulus
                     ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
-                    print(ref_neurone)
+
                     V=len(vm)
                     max_time = run_time-injection_start-interval
                     vm=vm.T
@@ -228,7 +227,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     r = dist(neuron_looked,ref_neurone)
-                    print('\nThe neurons we are looking at are a'+str(r)+' distance apart')
+                    print('\nThe neurons we are looking at are a '+str(r)+' distance apart')
 
                     MI_delay=[]
                     Dist_time = np.arange(0,100,10)
@@ -273,6 +272,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     Recorded_cell[neuron_looked//window][neuron_looked%window]=1
                     Recorded_cell[list_coord.index(ref_neurone[0]*size+ref_neurone[1])//window][list_coord.index(ref_neurone[0]*size+ref_neurone[1])%window]=1
                     plt.imshow(Recorded_cell)
+                    plt.title(str(r))
 
 
 
