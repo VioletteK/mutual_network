@@ -99,8 +99,6 @@ class MidpointNormalize(mpl.colors.Normalize):
         x, y = [self.vmin, self.midpoint, self.vmax], [normalized_min, normalized_mid, normalized_max]
         return np.ma.masked_array(np.interp(value, x, y))
 
-
-
 # ------------------------------------------------------------------------------
 
 
@@ -202,164 +200,159 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 70
-                    #the interval on which the MI is calculated
-                    number_of_annulus = 20
-                    #in how many parts will be the ray r divided
-
-
-
-                    Time_maximum = []
-                    list_rho = []
-                    Time_maximum1 = []
-                    list_rho1 = []
+                    injection_start,injection_end = 1310,3000
+                    interval = 20
+                    #interval where the MI is calculated
+                    step =5
+                    #the lower it is, the more values we'll have
 
 
                     x = params['Recorders']['py']['v']['x']
                     y = params['Recorders']['py']['v']['y']
                     window = params['Recorders']['py']['v']['size']+1
-                    list_coord = [(x+i)*size+(y+j) for i in range(window) for j in range(window)]
+                    X, Y = np.meshgrid([i for i in range(window)],[i for i in range(window)])
+                    #list_coord = [(x+i)*size+(y+j) for i in range(window) for j in range(window)]
+                    list_coord = [(x+i)*size+(y+j) for j in range(window) for i in range(window)]
                     #Here is a list of the ancient coord at the index of their new
                     #to obtain the new coord of a neurone : list_coord.index(coord_neurone)
 
-                    injection_points=params['Injections']['py']['cellidx']
+                    #the neuron we are looking at
+                    x_ref = 23
+                    y_ref = 20
+                    index = int(x_ref*window + y_ref)
+                    ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
 
+                    #gaussian blur
+                    Kernel1 = 1/16*np.array([
+                    [1,2,1],
+                    [2,4,2],
+                    [1,2,1]
+                    ])
 
-                    min_point, max_point = min(injection_points)//size,max(injection_points)//size
-
-                    #the 'center' of the annulus taken as the central point of all the cells
-                    #ref_neurone = [np.floor(np.mean([min_point,max_point])) for i in range(2)]
-                    ref_neurone = [50,50]
-                    #list of the annulus
-                    Annulus = [[] for i in range(number_of_annulus)]
-
-                    def dist(neurone,ref_neurone):
-                        '''euclidian distance'''
-                        x = neurone//size
-                        y = neurone%size
-                        return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
-
-                    # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=40
-                    #this is the ray of the disk around our central cell
-                    print('... the width of the annulus is '+ str(r/number_of_annulus))
+                    def accentuation1(x):
+                        return 0.2*(np.tanh(10*x-2)+1)
 
 
 
 
 
-                    for neuron in list_coord:
-                        #adding each neuron but those in the injected cells in an annulus
-                        if not neuron in injection_points :
-                            d = dist(neuron,ref_neurone)
-                            for i in range(number_of_annulus):
-                                if i* r/number_of_annulus<d<= (i+1)*r/number_of_annulus:
-                                    Annulus[i].append(neuron)
-                                    break
-                    Annulus = list(filter(([]).__ne__, Annulus))
+                    Vm_t = np.zeros((window,window))
 
 
-
-                    #we delete the empty lists
                     max_time = run_time-injection_start-interval
 
-                    Time_delay = np.arange(-100,200,3)
+                    Time_delay = np.arange(-10,200,step)
+
+                    Recorded_cell = [np.zeros((window, window)) for t in range(int(run_time/dt))]
+                    #Correlation Matrix
+                    Norm_vect = [np.zeros((window, window)) for t in range(int(run_time/dt))]
+                    #Norm of vector matrix
+
+                    Gradient = [[] for t in range(int(run_time/dt))]
+
                     #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
-                    vm_base = vm[list_coord.index(ref_neurone[0]*size+ref_neurone[1])][int(injection_start//dt):int((injection_start+interval)//dt)]
+                    indice = list_coord.index(ref_neurone[0]*size+ref_neurone[1])
+                    vm_base = vm[indice][int(injection_start/dt):int((injection_start+interval)/dt)]
                     #list of the vm values of the central neuron beetween the beginning of the injection and beginnin+interval
-                    c_X,xedges = np.histogram(vm_base,200,range=(-90.,-40.))
                     #every interval (ms) we calculate the MI
 
 
-                    fig=plt.figure()
-                    for A in Annulus :
-                        MI_annulus = []
-                        for time_delay in Time_delay :
-                            MI_delay = []
-                            for neuron in A :
+                    for time_delay in Time_delay:
 
-                                vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)//dt):int((injection_start+time_delay+interval)//dt)]
+                        for i in range(window**2):
+                            # #i is the lign
+                            # for j in range(window):
+                            #     #this is the column
+                            #     #vm_neurone = vm[i*window+j][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
+                            vm_neurone = vm[i][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
 
-                                #calcul mutual Information between a and neuron
-                                c_Y,xedges = np.histogram(vm_neurone,200,range=(-90.,-40.))#,density=True)
-
-                                MI_delay.append(mutual_info_score(c_X,c_Y))
-                            MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
+                            Recorded_cell[int((injection_start+time_delay)/dt)][i%window][i//window]= signal.correlate(vm_neurone,vm_base,mode ='valid')
 
 
-                        MI_annulus_filtered=savgol_filter(MI_annulus, 21, 3)
+                            Vm_t[i%window][i//window] = np.mean(vm_neurone)
+                        Recorded_cell1=signal.convolve2d(Recorded_cell[int((injection_start+time_delay)/dt)],Kernel1, mode='same')
+                        ############################
+                        #Gradient calcul as numpy
+                        ############################
 
-                        if Annulus.index(A)>1:
-
-                            maxi = max(MI_annulus_filtered)
-                            Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
-                            list_rho.append(Annulus.index(A)* r/number_of_annulus)
-                            #we take the time of the max in the filtered MI
-
-                            maxi1 = max(MI_annulus)
-                            Time_maximum1.append(Time_delay[list(MI_annulus).index(maxi1)])
-                            list_rho1.append(Annulus.index(A))
-                            #we take the time of the max in the MI
-
-                            plt.scatter(Time_delay,MI_annulus, color = mpcm.hsv(Annulus.index(A)/(len(Annulus))),marker='x')
-                            plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = mpcm.hsv(Annulus.index(A)/(len(Annulus))))
+                        out = np.zeros_like(Recorded_cell[int((injection_start+time_delay)/dt)])
+                        out[1:-1,:]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][2:,:]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:-2,:])/2
+                        out[0,:]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][1,:]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][0,:])
+                        out[-1,:]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][-1,:]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][-2,:])
+                        Gradient[int((injection_start+time_delay)/dt)].append(out)
+                        out = np.zeros_like(Recorded_cell[int((injection_start+time_delay)/dt)])
+                        out[:,1:-1]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,2:]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,:-2])/2
+                        out[:,0]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,1]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,0])
+                        out[:,-1]=(np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,-1]-np.asanyarray(Recorded_cell)[int((injection_start+time_delay)/dt)][:,-2])
+                        Gradient[int((injection_start+time_delay)/dt)].append(out)
 
 
+                        # Recorded_cell[int((injection_start+time_delay)/dt)][indice%window][indice//window]=0.4
 
-                    plt.title('Mutual information du neurone '+str(ref_neurone))
-                    plt.xlabel('Time delay')
-                    plt.ylabel("MI")
-                    plt.legend(frameon=False)
-                    # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
-                    fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+                        #
+                        # fig=plt.figure()
+                        #
+                        # plt.imshow(Recorded_cell[int((injection_start+time_delay)/dt)], cmap = 'inferno',interpolation='none',vmin = 0,vmax=0.4)
+                        # plt.clim([0,0.2])
+                        #
+                        [U,V]=Gradient[int((injection_start+time_delay)/dt)]
+                        # plt.quiver(X,Y,-V,U,color='white')
+                        # plt.title('Gradient')
+                        # plt.contour(Recorded_cell1,5)
+                        # plt.colorbar()
+                        #
+                        # tmin=float(i*dt)
+                        # tmax=float((i+interval)*dt)
+                        # plt.show(block=True)
+                        # plt.title('Contoured MI and gradient '+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_Gradient_correlation_'+str(time_delay)+'.png')
+                        # # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'_Gradient'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
+
+                        #plotting the norm of the gradient vectors
+                        # fig=plt.figure()
+
+                        for j in range(window):
+                            for i in range(window):
+
+                                Norm_vect[int((injection_start+time_delay)/dt)][i][j]=np.linalg.norm([U[i][j],V[i][j]])
+
+                        # plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.03,cmap= 'YlGnBu')
+                        # plt.title('Norme')
+                        #
+                        # # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'_NormVect_'+str(time_delay)+'.png')
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_NormVect_correlation_'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
+
+                    fig = plt.figure()
+                    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none', cmap = 'viridis')
+                    plt.colorbar()
+                    plt.title('Mean norm ')
+
+                    # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Moyenne_generale'+'.png')
+                    fig.savefig(folder+'/tau='+ str(params['Populations']['py']['cellparams']['tau_w'])+'_Mean_norm_CC_'+'.png')
                     plt.close()
                     fig.clf()
 
-                    #plot the Annulus
-                    Recorded_cell = np.zeros((window, window))
-                    for j in range(window**2):
-                        for A in Annulus :
-                            if list_coord[j] in A :
-                                Recorded_cell[j//window][j%window] = int(Annulus.index(A))+2
-                    fig1 = plt.figure()
-                    plt.imshow(Recorded_cell, cmap = 'inferno',interpolation = 'none')
+
+                    #Plotting mean MI
+                    fig = plt.figure()
+
+                    plt.imshow([[np.mean([Recorded_cell[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none', cmap = 'viridis')
                     plt.colorbar()
-                    plt.title('Annulus')
-                    fig1.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Annulus'+'.png', transparent=True)
-                    plt.close()
-                    fig1.clf()
+                    plt.title('CC_mean')
 
-                    #plotting the diffusion with classic MI
-                    fig2 = plt.figure()
-                    plt.plot(list_rho1,Time_maximum1,'x')
-                    lr = scipy.stats.linregress(list_rho1,Time_maximum1)
-                    y=[lr[0]*i+lr[1] for i in list_rho1]
-                    plt.plot(list_rho1,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
-                    plt.legend()
-                    plt.title('Maximum brut')
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum'+'.png', transparent=True)
-                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum'+'.png', transparent=True)
-                    plt.close()
-                    fig2.clf()
+                    fig.savefig(folder+'/tau='+ str(params['Populations']['py']['cellparams']['tau_w'])+'_CC_mean'+'.png')
+                    # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Weighted_mean'+'.png')
 
-                    #plotting the diffusion with filtered MI
-                    fig2 = plt.figure()
-                    plt.plot(list_rho,Time_maximum,'x')
-                    lr = scipy.stats.linregress(list_rho,Time_maximum)
-                    y=[lr[0]*i+lr[1] for i in list_rho]
-                    plt.plot(list_rho,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
-                    plt.legend()
-                    plt.title('Maximum savgol')
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum_savgol'+'.png', transparent=True)
-                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum_savgol'+'.png',transparent=True)
                     plt.close()
-                    fig2.clf()
+                    fig.clf()
 
-                    carac_time = np.mean([Time_maximum[i+1]-Time_maximum[i] for i in range(len(Time_maximum)-1)])
-                    print("Caracteristic time is "+ str(carac_time)+ ' so the speed is :'+str(lr[0]**2*carac_time))
+
 
 
 

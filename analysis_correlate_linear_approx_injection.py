@@ -203,9 +203,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 70
+                    interval = 80
                     #the interval on which the MI is calculated
-                    number_of_annulus = 20
+                    number_of_annulus = 16
                     #in how many parts will be the ray r divided
 
 
@@ -241,7 +241,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=40
+                    r=25
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
 
@@ -264,7 +264,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     #we delete the empty lists
                     max_time = run_time-injection_start-interval
 
-                    Time_delay = np.arange(-100,200,3)
+                    Time_delay = np.arange(-200,500,3)
                     #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
@@ -283,16 +283,14 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                                 vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)//dt):int((injection_start+time_delay+interval)//dt)]
 
-                                #calcul mutual Information between a and neuron
-                                c_Y,xedges = np.histogram(vm_neurone,200,range=(-90.,-40.))#,density=True)
 
-                                MI_delay.append(mutual_info_score(c_X,c_Y))
+                                MI_delay.append(signal.correlate(vm_neurone,vm_base, mode = 'valid'))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
 
                         MI_annulus_filtered=savgol_filter(MI_annulus, 21, 3)
 
-                        if Annulus.index(A)>1:
+                        if Annulus.index(A)>2:
 
                             maxi = max(MI_annulus_filtered)
                             Time_maximum.append(Time_delay[list(MI_annulus_filtered).index(maxi)])
@@ -309,12 +307,12 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
 
-                    plt.title('Mutual information du neurone '+str(ref_neurone))
+                    plt.title('Correlation with '+str(ref_neurone))
                     plt.xlabel('Time delay')
                     plt.ylabel("MI")
                     plt.legend(frameon=False)
-                    # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
-                    fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Mutual Information avec '+str(len(Annulus))+' anneaux' +'.png')
+                    # fig.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Correlation_with_'+str(len(Annulus))+'_annulus' +'.png')
+                    fig.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Correlation_with_'+str(len(Annulus))+'_annulus' +'.png')
                     plt.close()
                     fig.clf()
 
@@ -328,7 +326,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.imshow(Recorded_cell, cmap = 'inferno',interpolation = 'none')
                     plt.colorbar()
                     plt.title('Annulus')
-                    fig1.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Annulus'+'.png', transparent=True)
+                    fig1.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Annulus_correlate'+'.png', transparent=True)
                     plt.close()
                     fig1.clf()
 
@@ -340,8 +338,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.plot(list_rho1,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.legend()
                     plt.title('Maximum brut')
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum'+'.png', transparent=True)
-                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum'+'.png', transparent=True)
+                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum_correlate' +'.png')
+                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum_correlate'+'.png', transparent=True)
                     plt.close()
                     fig2.clf()
 
@@ -353,8 +351,9 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.plot(list_rho,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.legend()
                     plt.title('Maximum savgol')
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum_savgol'+'.png', transparent=True)
-                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum_savgol'+'.png',transparent=True)
+                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum_savgol_correlate' +'.png')
+
+                    # fig2.savefig(folder+'/Injection_lenght='+str(-injection_start+injection_end)+'Maximum_savgol_correlate'+'.png',transparent=True)
                     plt.close()
                     fig2.clf()
 

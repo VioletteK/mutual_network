@@ -202,10 +202,10 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
-                    injection_start,injection_end = 1400,3000
-                    interval = 80
+                    injection_start,injection_end = 1310,3000
+                    interval = 70
                     #the interval on which the MI will be computed
-                    number_of_annulus = 10
+                    number_of_annulus = 12
                     #in how many parts will the disk be divided
 
                     #lists to save he time where the maximum occurs for each annulus
@@ -223,8 +223,8 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
                     #the central neuron
-                    x_ref = 46
-                    y_ref = 14
+                    x_ref = 23
+                    y_ref = 20
                     index = int(x_ref*window + y_ref)
                     ref_neurone = [int(list_coord[index]//size),int(list_coord[index]%size)]
 
@@ -237,7 +237,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=15
+                    r=16
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
 
@@ -258,7 +258,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     max_time = run_time-injection_start-interval
 
-                    Time_delay = np.arange(-300,500,5)
+                    Time_delay = np.arange(-300,400,5)
                     #the windows where we calculate the MI have to intersect
                     V=len(vm)
                     vm=vm.T
@@ -284,7 +284,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
                         MI_annulus_filtered=savgol_filter(MI_annulus, 31, 3)
-                        if Annulus.index(A)%1==0:
+                        if Annulus.index(A)>0:
                             #only plotting one annulus for two to lighten the graph
                             plt.plot(Time_delay,MI_annulus, color = mpcm.hsv(Annulus.index(A)/(len(Annulus))),label='Anneau '+str(Annulus.index(A)),marker = 'x')#,linestyle='-.')
 
@@ -319,7 +319,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.close()
                     fig1.clf()
 
-                    #plotting time of max in function of each annulus 
+                    #plotting time of max in function of each annulus
                     fig2 = plt.figure()
                     plt.plot(list_rho,Time_maximum,'x')
                     lr = scipy.stats.linregress(list_rho,Time_maximum)
@@ -327,7 +327,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.plot(list_rho,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.legend()
                     plt.title('Maximum')
-                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum'+'.png')
+                    fig2.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'savgol_maximum'+'.png')
                     plt.close()
                     fig2.clf()
 
@@ -338,7 +338,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                     plt.plot(list_rho1,y,c='r', label="pente="+str(lr[0])+", R2="+str(lr[2]**2))
                     plt.legend()
                     plt.title('Maximum')
-                    fig3.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'Maximum1'+'.png')
+                    fig3.savefig(folder+'/tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'raw_maximum'+'.png')
                     plt.close()
                     fig3.clf()
 

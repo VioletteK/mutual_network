@@ -290,48 +290,48 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         Gradient[int((injection_start+time_delay)/dt)].append(out)
 
                         #to see the neuron we consider on the map
-                        Recorded_cell[int((injection_start+time_delay)/dt)][indice//window][indice%window]=0.4
+                        # Recorded_cell[int((injection_start+time_delay)/dt)][indice//window][indice%window]=0.4
 
-                        Recorded_cell1=signal.convolve2d(accentuation1(Recorded_cell)[int((injection_start+time_delay)/dt)],Kernel1, mode='same')
+                        Recorded_cell1=signal.convolve2d(accentuation1(Recorded_cell[int((injection_start+time_delay)/dt)]),Kernel1, mode='same')
                         #plotting the contoured MI thanks to the blurred accentuated MI
-                        fig=plt.figure()
-
-                        plt.imshow(Recorded_cell[int((injection_start+time_delay)/dt)], cmap = 'inferno',interpolation='none')
-                        plt.clim([0,0.3])
-
-                        tmin=float(i*dt)
-                        tmax=float((i+interval)*dt)
-
-                        plt.title('MI at times ['+str(round(tmin,3))+':'+str(round(tmax,3))+']')
+                        # fig=plt.figure()
+                        #
+                        # plt.imshow(Recorded_cell[int((injection_start+time_delay)/dt)], cmap = 'inferno',interpolation='none')
+                        # plt.clim([0,0.3])
+                        #
+                        # tmin=float(i*dt)
+                        # tmax=float((i+interval)*dt)
+                        #
+                        # plt.title('MI at times ['+str(round(tmin,3))+':'+str(round(tmax,3))+']')
                         [U,V]=Gradient[int((injection_start+time_delay)/dt)]
-                        # plt.quiver(X,Y,-V,U,color='white')
-                        plt.contour(Recorded_cell1,5)
-                        plt.colorbar()
-                        plt.show(block=True)
-                        plt.title('MI '+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
+                        # # plt.quiver(X,Y,-V,U,color='white')
+                        # plt.contour(Recorded_cell1,5)
+                        # plt.colorbar()
+                        # plt.show(block=True)
+                        # plt.title('MI '+str(injection_start+time_delay)+','+str(injection_start+time_delay+interval))
+                        #
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_Gradient'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
 
-                        fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_Gradient'+str(time_delay)+'.png')
-                        plt.close()
-                        fig.clf()
-
-                         #Plotting the norw of each vector at a given time
-                        fig=plt.figure()
+                        # #Plotting the norw of each vector at a given time
+                        # fig=plt.figure()
                         for j in range(window):
                             for i in range(window):
 
                                 Norm_vect[int((injection_start+time_delay)/dt)][i][j]=np.linalg.norm([U[i][j],V[i][j]])
-                        plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.25,cmap= 'YlGnBu')
-                        plt.colorbar()
-                        plt.title('Gradient norm at time ['+str(round(tmin,3))+':'+str(round(tmax,3))+']')
-                        fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_NormVect_'+str(time_delay)+'.png')
-                        plt.close()
-                        fig.clf()
+                        # plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.25,cmap= 'YlGnBu')
+                        # plt.colorbar()
+                        # plt.title('Gradient norm at time ['+str(round(tmin,3))+':'+str(round(tmax,3))+']')
+                        # fig.savefig(folder+'/Tau='+str(params['Populations']['py']['cellparams']['tau_w'])+'_NormVect_'+str(time_delay)+'.png')
+                        # plt.close()
+                        # fig.clf()
 
 
                     #Plotting the mean gradient norm for each cell
                     fig = plt.figure()
                     plt.title('Mean')
-                    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0, vmax = 0.2, cmap = 'viridis')
+                    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none', cmap = 'viridis')
                     plt.colorbar()
                     fig.savefig(folder+'/tau = '+ str(params['Populations']['py']['cellparams']['tau_w'])+'Moyenne_generale'+'.png')
                     plt.close()
@@ -339,7 +339,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
                     fig = plt.figure()
                     plt.title('Mean MI')
-                    plt.imshow([[np.mean([Recorded_cell[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0, vmax = 0.2, cmap = 'viridis')
+                    plt.imshow([[np.mean([Recorded_cell[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none', cmap = 'viridis')
                     plt.colorbar()
                     fig.savefig(folder+'/tau = '+ str(params['Populations']['py']['cellparams']['tau_w'])+'MI_Mean'+'.png')
                     plt.close()
