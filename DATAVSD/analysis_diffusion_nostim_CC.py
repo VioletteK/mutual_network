@@ -45,10 +45,10 @@ for i in range(1,11):
     ref_neurone = [85,55]
 
 
-    Time_delay = np.arange(-20,50,1)
-    number_of_annulus = 10
-    interval = 10
-    r = 30
+    Time_delay = np.arange(-20,18,1)
+    number_of_annulus = 20
+    interval = 20
+    r = 20
     header='/home/margauxvrech/mutual_network/DATAVSD/'
     newheader=folder+file +'data'
     if not os.path.exists(header+newheader):
@@ -152,6 +152,6 @@ for i in range(1,11):
     plt.legend()
     plt.title('Maximum')
 
-    fig2.savefig(header+newheader+'/Raw_Maximum'+'.png')
+    fig2.savefig(header+newheader+'/Raw_Maximum_CC'+'.png')
     plt.close()
     fig2.clf()
