@@ -13,7 +13,7 @@ from scipy.signal import savgol_filter
 from sklearn.metrics import mutual_info_score
 
 RdBu = cm.get_cmap('RdBu_r', 256)
-number_of_annulus = 21
+
 
 # folder = 'Single C2 whisker evoked responses, second set of 10 trials/'
 folder = 'Single_C2_whisker_evoked_responses_first_10_trials/'
@@ -57,7 +57,6 @@ for i in range(1,11):
 
 
     vm_base_brut=[L[t][50][50] for t in range(injection_start,injection_start+interval)]
-    c_X,xedges = np.histogram(vm_base,200,range=(-0.1,0.02))
     c_X_brut,xedges = np.histogram(vm_base_brut,200,range=(-0.1,0.02))
     VM_moyen=[np.mean([L[injection_start+t][i] for i in range(100)]) for t in Time_delay]
     fig=plt.figure()
@@ -75,42 +74,42 @@ for i in range(1,11):
                 c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
 
-
-        fig=plt.figure()
-
-
-        plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
-        plt.clim([0,0.028])
-        plt.colorbar()
-        plt.title('MI brut '+str(injection_start+time_delay))
+        #
+        # fig=plt.figure()
+        #
+        #
+        # plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
+        # plt.clim([0,0.028])
+        # plt.colorbar()
+        # plt.title('MI brut '+str(injection_start+time_delay))
         #
         [U,V]=np.gradient(Recorded_cell_brut[injection_start+time_delay])
-        # plt.quiver(X,Y,-V,U,color='white')
-
-        plt.show(block=True)
-        filename= '/Gradient_'+str(injection_start+time_delay)+'.png'
-        fig.savefig(header+newheader+filename, transparent=True)
-
-        plt.close()
-        fig.clf()
+        # # plt.quiver(X,Y,-V,U,color='white')
+        #
+        # plt.show(block=True)
+        # filename= '/Gradient_'+str(injection_start+time_delay)+'.png'
+        # fig.savefig(header+newheader+filename, transparent=True)
+        #
+        # plt.close()
+        # fig.clf()
 
         for i in range(window):
             for j in range(window):
 
                 Norm_vect[int((injection_start+time_delay)/dt)][i][j]=np.linalg.norm([U[i][j],V[i][j]])
-        fig=plt.figure()
-        plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.01,cmap= 'YlGnBu')
-        plt.colorbar()
-        filename= '/Norm_vect_'+str(injection_start+time_delay)+'.png'
-        fig.savefig(header+newheader+filename)
-        plt.close()
-        fig.clf()
+        # fig=plt.figure()
+        # plt.imshow(Norm_vect[int((injection_start+time_delay)/dt)], interpolation = 'none',vmin=0,vmax= 0.01,cmap= 'YlGnBu')
+        # plt.colorbar()
+        # filename= '/Norm_vect_'+str(injection_start+time_delay)+'.png'
+        # fig.savefig(header+newheader+filename)
+        # plt.close()
+        # fig.clf()
 
         #Plotting mean norm of each gradient vector
     fig = plt.figure()
-    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.015, cmap = 'viridis')
+    plt.imshow([[np.mean([Norm_vect[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin=0,vmax= 0.01, cmap = 'viridis')
     plt.colorbar()
-    filename= '/Mean_Norm_'+str(injection_start+time_delay)+'.png'
+    filename= '/Mean_Norm_MI'+'.png'
     fig.savefig(header+newheader+filename)
     plt.close()
     fig.clf()
@@ -119,9 +118,9 @@ for i in range(1,11):
 
     #Mean MI
     fig = plt.figure()
-    plt.imshow([[np.mean([Recorded_cell_brut[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none',vmin = 0,vmax=0.015, cmap = 'viridis')
+    plt.imshow([[np.mean([Recorded_cell_brut[int((injection_start+time_delay)/dt)][i][j] for time_delay in Time_delay]) for j in range(window)] for i in range(window)], interpolation = 'none', cmap = 'viridis')
     plt.colorbar()
-    filename= '/Mean_MI'+str(injection_start+time_delay)+'.png'
+    filename= '/Mean_MI'+'.png'
     fig.savefig(header+newheader+filename)
     plt.close()
     fig.clf()

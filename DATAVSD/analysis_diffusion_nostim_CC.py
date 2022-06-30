@@ -45,9 +45,9 @@ for i in range(1,11):
     ref_neurone = [85,55]
 
 
-    Time_delay = np.arange(-20,30,1)
+    Time_delay = np.arange(-20,50,1)
     number_of_annulus = 10
-    interval = 20
+    interval = 10
     r = 30
     header='/home/margauxvrech/mutual_network/DATAVSD/'
     newheader=folder+file +'data'
@@ -65,7 +65,6 @@ for i in range(1,11):
     X, Y = np.meshgrid([i for i in range(window)],[i for i in range(window)])
 
     vm_base_brut=[L[t][ref_neurone[0]][ref_neurone[1]] for t in range(min(injection_start,injection_end-1),min(injection_start+interval,injection_end))]
-    c_X_brut,xedges = np.histogram(vm_base_brut,500,range=(-0.1,0.02))
 
     Time_maximum1 = []
     list_rho1 = []
@@ -98,7 +97,7 @@ for i in range(1,11):
 
 
 
-    print('Calculating MI...')
+    print('Calculating CC...')
 
 
 
@@ -110,8 +109,7 @@ for i in range(1,11):
             MI_delay = []
             for neuron in A :
                 vm_neurone_brut = [L[t][neuron[0]][neuron[1]] for t in range(min(injection_start+time_delay,injection_end-1),min(injection_start+interval+time_delay,injection_end))]
-                c_Y_brut,xedges = np.histogram(vm_neurone_brut,500,range=(-0.1,0.02))
-                MI_delay.append(mutual_info_score(c_X_brut,c_Y_brut))
+                MI_delay.append(float(signal.correlate(vm_base_brut,vm_neurone_brut, mode = 'valid')))
             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
 
@@ -122,11 +120,11 @@ for i in range(1,11):
             list_rho1.append(Annulus.index(A))
             plt.plot(Time_delay,MI_annulus, color = cm.hsv(Annulus.index(A)/len(Annulus)),marker='x')#,linestyle='-.')
             # plt.plot(Time_delay,MI_annulus_filtered,label='Anneau '+str(Annulus.index(A)), color = cm.hsv(Annulus.index(A)/len(Annulus)))#,linestyle='-.')
-    plt.title('Mutual information')
+    plt.title('CC')
     plt.xlabel('Time delay')
-    plt.ylabel("MI")
+    plt.ylabel("CC")
     plt.legend(frameon=False)
-    fig.savefig(header+newheader+'/MI_'+str(len(Annulus))+'_anneaux'+str(ref_neurone)+'.png')
+    fig.savefig(header+newheader+'/CC_'+str(len(Annulus))+'_annulus'+str(ref_neurone)+'.png')
     plt.close()
     fig.clf()
     print('\nPlotting the Annulus')
@@ -140,7 +138,7 @@ for i in range(1,11):
     plt.imshow(Annulus_plot, cmap = 'inferno',interpolation = 'none')
     plt.colorbar()
     plt.title('Annulus')
-    fig1.savefig(header+newheader+'/Annulus'+'.png')
+    fig1.savefig(header+newheader+'/Annulus_CC'+'.png')
     plt.close()
     fig1.clf()
 
