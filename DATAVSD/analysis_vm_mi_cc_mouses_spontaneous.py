@@ -19,7 +19,7 @@ RdBu = cm.get_cmap('RdBu_r', 256)
 folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
 # for i in range(11,21):
 # for i in range(1,11):
-for i in [2]:
+for i in [5]:
     file = 'Nostim_'+str(i)
     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
     with open(folder+file, 'r') as fr:
@@ -33,7 +33,7 @@ for i in [2]:
     dt = 1
     run_time = 511
     size = 100
-    injection_start,injection_end = 366,511
+    injection_start,injection_end = 335,511
     #where the activity starts
     interval = 20
     x = 0
@@ -41,7 +41,7 @@ for i in [2]:
     window = 100
     list_coord = [(x+i)*size+(y+j) for j in range(window) for i in range(window)]
     #list of the cooridinate at their index in the vm list
-    ref_neurone = [85,55]
+    ref_neurone = [70,55]
 
 
     header='/home/margauxvrech/mutual_network/DATAVSD/'
@@ -50,7 +50,7 @@ for i in [2]:
         os.makedirs(header+newheader)
     print('\nAnalysing data of '+file)
     print('\nData will be saved in '+newheader)
-    Time_delay = np.arange(-15,30,1)
+    Time_delay = np.arange(-20,40,1)
     V=len(L)
     Recorded_cell_brut = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
     Recorded_cell_correlate = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
@@ -77,7 +77,7 @@ for i in [2]:
 
                 c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
-                Recorded_cell_correlate[injection_start+time_delay][i][j]= float(signal.correlate(vm_neurone_brut,vm_base_brut,mode = 'valid'))
+                Recorded_cell_correlate[injection_start+time_delay][i][j]= float(signal.correlate(vm_base_brut/ np.std(np.array(vm_base_brut)),vm_neurone_brut/ np.std(np.array(vm_neurone_brut)),mode = 'valid'))
 
                 VM[injection_start+time_delay][i][j] = np.mean([L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)])
         fig=plt.figure()
@@ -87,13 +87,17 @@ for i in [2]:
         plt.colorbar()
         fig.add_subplot(1,3,2)
         plt.imshow(Recorded_cell_correlate[injection_start+time_delay],cmap = 'magma',interpolation='none')
-        plt.clim([-0.00004,0.00004])
+        # plt.clim([-20,50])
+        plt.clim([-20,60])
+
         plt.colorbar()
         plt.title('CC')
 
         fig.add_subplot(1,3,3)
         plt.imshow(Recorded_cell_brut[injection_start+time_delay], cmap = 'inferno',interpolation='none')
-        plt.clim([0,0.5])
+        # plt.clim([0,0.3])
+        plt.clim([0,0.18])
+
         plt.colorbar()
 
         plt.title('MI '+str(injection_start+time_delay))

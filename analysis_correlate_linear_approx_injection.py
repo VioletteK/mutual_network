@@ -197,15 +197,15 @@ def analyse(params, folder, addon='', removeDataFile=False):
 
 
                 ###################################
-                if 'Vm' in params['Analysis'] and params['Analysis']['Vm'] and key in params['Analysis']['Vm']:
+                if 'Vm' in params['Analysis'] and params['Analysis']['Vm'] and key in params['Analysis']['Vm'] :
                     print('Vm')
                     dt = params['dt']
                     run_time = params['run_time']
                     size = np.sqrt(params['Populations']['py']['n'])
                     injection_start,injection_end = params['Injections']['py']['start']
-                    interval = 80
+                    interval = 70
                     #the interval on which the MI is calculated
-                    number_of_annulus = 16
+                    number_of_annulus = 20
                     #in how many parts will be the ray r divided
 
 
@@ -241,7 +241,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                         return np.linalg.norm([x-ref_neurone[0],y-ref_neurone[1]])
 
                     # r = dist([np.mean([min_point,max_point]),y],ref_neurone)
-                    r=25
+                    r=40
                     #this is the ray of the disk around our central cell
                     print('... the width of the annulus is '+ str(r/number_of_annulus))
 
@@ -284,7 +284,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)//dt):int((injection_start+time_delay+interval)//dt)]
 
 
-                                MI_delay.append(signal.correlate(vm_neurone,vm_base, mode = 'valid'))
+                                MI_delay.append(signal.correlate(vm_base,vm_neurone, mode = 'valid'))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
 

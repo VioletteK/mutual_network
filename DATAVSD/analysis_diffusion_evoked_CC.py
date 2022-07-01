@@ -71,7 +71,7 @@ for i in range(1,11):
 
                 vm_neurone_brut = [L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)]
 
-                Recorded_cell_brut[injection_start+time_delay][i][j]= float(signal.correlate(vm_neurone_brut,vm_base_brut,mode='valid'))
+                Recorded_cell_brut[injection_start+time_delay][i][j]= float(signal.correlate(vm_base_brut,vm_neurone_brut,mode='valid'))
 
 
     #########################################################

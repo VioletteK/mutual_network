@@ -76,7 +76,7 @@ for i in range(1,11):
 
                 c_Y_brut,xedges = np.histogram(vm_neurone_brut,200,range=(-0.1,0.02))
                 Recorded_cell_brut[injection_start+time_delay][i][j]= mutual_info_score(c_X_brut,c_Y_brut)
-                Recorded_cell_correlate[injection_start+time_delay][i][j]= float(signal.correlate(vm_neurone_brut,vm_base_brut,mode = 'valid'))
+                Recorded_cell_correlate[injection_start+time_delay][i][j]= float(signal.correlate(vm_base_brut,vm_neurone_brut,mode = 'valid'))
                 VM[injection_start+time_delay][i][j] = np.mean([L[t][i][j] for t in range(injection_start+time_delay,injection_start+interval+time_delay)])
 
         fig=plt.figure()

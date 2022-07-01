@@ -280,7 +280,7 @@ def analyse(params, folder, addon='', removeDataFile=False):
                                 vm_neurone = vm[list_coord.index(neuron)][int((injection_start+time_delay)//dt):int((injection_start+time_delay+interval)//dt)]
 
 
-                                MI_delay.append(signal.correlate(vm_neurone,vm_base, mode = 'valid'))
+                                MI_delay.append(signal.correlate(vm_base,vm_neurone, mode = 'valid'))
                             MI_annulus.append(np.mean(MI_delay, dtype=np.float64))
 
 

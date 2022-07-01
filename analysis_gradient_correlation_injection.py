@@ -268,11 +268,11 @@ def analyse(params, folder, addon='', removeDataFile=False):
                             #     #vm_neurone = vm[i*window+j][min(int((injection_start+time_delay)/dt),V-1):min(int((injection_start+time_delay+interval)/dt),V)]
                             vm_neurone = vm[i][int((injection_start+time_delay)/dt):int((injection_start+time_delay+interval)/dt)]
 
-                            Recorded_cell[int((injection_start+time_delay)/dt)][i%window][i//window]= signal.correlate(vm_neurone,vm_base,mode ='valid')
+                            Recorded_cell[int((injection_start+time_delay)/dt)][i%window][i//window]= signal.correlate(vm_base,vm_neurone,mode ='valid')
 
 
                             Vm_t[i%window][i//window] = np.mean(vm_neurone)
-                        Recorded_cell1=signal.convolve2d(Recorded_cell[int((injection_start+time_delay)/dt)],Kernel1, mode='same')
+                        # Recorded_cell1=signal.convolve2d(Recorded_cell[int((injection_start+time_delay)/dt)],Kernel1, mode='same')
                         ############################
                         #Gradient calcul as numpy
                         ############################
