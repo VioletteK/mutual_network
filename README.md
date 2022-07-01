@@ -6,6 +6,8 @@ In the spontaneous ones, the parameters such as :
 - ...                 
 must be entered by hand. 
 
+For correlation analysis, same algorithm with only the line where the MI function is called changed to correlate (signal).
+
 ## Simulation codes :
 
 **The time var are in ms**
