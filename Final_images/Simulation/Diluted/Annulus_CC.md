@@ -25,5 +25,5 @@ None
 - `interval` = 80
 - `number_of_annulus` = 16
 - `r` = 25
-- `Time_delay` = np.arange(-100,200,3)
+- `Time_delay` = np.arange(-200,500,3)
 - `savgol` = 21

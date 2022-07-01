@@ -24,4 +24,5 @@ None
 - `tau_w` = 500.
 - `interval` = 20
 - `step` = 5
+- `ref_neurone` = 23,20
 - `Time_delay` = np.arange(-50,100,step)
