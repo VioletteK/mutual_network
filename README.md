@@ -50,8 +50,8 @@ All the analysises start at the lign `if 'Vm'` ...
 It plots a map of the number of spikes for each neuron in the `time_window`, the mean number of spikes in the square window starting frow each neuron as its low left corner and the Vm. 
 
 
-## Mouses DATA
-The data are savec as a 100x100x511 list (sizexsizextime)
+## Mices DATA
+The data are saved as a 100x100x511 list (size x size x time)
 Each algorithm starts by opening a folder and then analyses each set of data in it. 
 The parameters are the same as the one for simulation and the running is the same as well.
 
@@ -59,11 +59,20 @@ The parameters are the same as the one for simulation and the running is the sam
 Same as above 
 
 ### `Analysis_diffusion_spont` :
-Plot time of max as a function of the annulus, linear regression and annulus plotting. 
+Plots time of max as a function of the annulus, linear regression and annulus plotting. 
 
 ### `Analysis_gradient` :
 Same as simulation but without contour. 
 
 ### `Analysis_nostim` and `Analysis_mouses` :
 Plot VM and MI in the same figure, and can also do the analysis on the annulus. 
+
+### `Analysis_complete` :
+Takes the data of the four mices (3-4-5-6) and for each :
+- plots the mean VM in function of time 
+- plots the VM and MI in the same figure
+- plots the norm of the gradients of the VM and MI 
+- plots the mean value of the VM taken in each pixel, same for the MI, and the gradient norm
+When done, it computes the mean for all the data. 
+Possibility to pu a threshold to filter the data (between 0.001 and 0.0006 advised)
 
