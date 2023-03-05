@@ -76,9 +76,9 @@ Takes the data of the four mices (3-4-5-6) and for each :
 When done, it computes the mean for all the data. 
 Possibility to pu a threshold to filter the data (between 0.001 and 0.0006 advised)
 
-#Final Images 
-##Organisation
+# Final Images 
+## Organisation
 This file contains at leat one image by possible case (spontaneous/simulated, diluted/not diluted, simulation/mice...) and a description of the parameters to enter in which analysis to obtain the picture.
-#Ongoing
+# Ongoing
 Currently working on these kind of data given by the `Anlysis_complete` code to study the propagation. 
 ![Analyse_globaleGlobal_MI_gradient](https://user-images.githubusercontent.com/106587722/222971957-24c48d74-48a2-47c4-bea1-4f8ec4439683.png)
