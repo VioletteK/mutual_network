@@ -12,7 +12,7 @@ For correlation analysis, same algorithm with only the line where the MI functio
 
 **The time var are in ms**
 
-All the analysises start at the lign `if 'Vm'` ...
+All the analysises start at the lign `if 'Vm'` ... The code before is not mine but my tutor's as for the `run.py`
 
 ### `Analysis_gauss` :
 
