@@ -15,24 +15,34 @@ from sklearn.metrics import mutual_info_score
 RdBu = cm.get_cmap('RdBu_r', 256)
 number_of_annulus = 21
 
-# folder = 'Single C2 whisker evoked responses, second set of 10 trials/'
-folder = 'Single_C2_whisker_evoked_responses_first_10_trials/'
-# for i in [11,12,13,14,15,16,17,18,19,20]:
-for i in range(1,11):
-    file = 'C2_'+str(i)
+# # folder = 'Single C2 whisker evoked responses, second set of 10 trials/'
+# folder = 'Single_C2_whisker_evoked_responses_first_10_trials/'
+# # for i in [11,12,13,14,15,16,17,18,19,20]:
+# for i in range(1,11):
+#     file = 'C2_'+str(i)
+#     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
+#     with open(folder+file, 'r') as fr:
+#         lines = fr.readlines()
+#         for t in range(511):
+#             for i in range(100):
+#                 for j in range(100):
+#                     L[t][-i+99][j]=float(lines[t*10000+i*100+j])
+#folder = 'Mouses_3-5-6/20160912/'
+#folder = 'Mouses_3-5-6/20160914/'
+folder = 'Mouses_3-5-6/20160916/'
+for i in range(1,21):
+    file = 'C2_'+str(i)+'.txt'
     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
     with open(folder+file, 'r') as fr:
         lines = fr.readlines()
         for t in range(511):
             for i in range(100):
-                for j in range(100):
-                    L[t][-i+99][j]=float(lines[t*10000+i*100+j])
-
+                    L[t][i]=[float(lines[t*100+j].split('\t')[i]) for j in range(100)]
 
     dt = 1
     run_time = 511
     size = 100
-    injection_start,injection_end = 105,511
+    injection_start,injection_end = 100,511
     interval = 5
     x = 0
     y = 0
@@ -49,7 +59,7 @@ for i in range(1,11):
         os.makedirs(header+newheader)
     print('\nAnalysing data of '+file)
     print('\nData will be saved in '+newheader)
-    Time_delay = np.arange(-5,25,1)
+    Time_delay = np.arange(-5,20,1)
     V=len(L)
     Recorded_cell_brut = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
     Recorded_cell_correlate = [[[0 for k in range(100)] for l in range(100)] for t in range(511)]
@@ -86,7 +96,7 @@ for i in range(1,11):
         plt.colorbar()
         fig.add_subplot(1,3,2)
         plt.imshow(Recorded_cell_correlate[injection_start+time_delay],cmap = 'magma',interpolation='none')
-        plt.clim([0,0.001])
+        plt.clim([0,0.0001])
         plt.colorbar()
         plt.title('CC')
 

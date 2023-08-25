@@ -15,22 +15,32 @@ from sklearn.metrics import mutual_info_score
 RdBu = cm.get_cmap('RdBu_r', 256)
 
 
+# 
+# # folder = '_Nostim_ trials with only spontaneous activity, second set of 10 trials/'
+# folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
+# # for i in range(11,21):
+# # for i in range(1,11):
+# for i in [2]:
+#     file = 'Nostim_'+str(i)
+#     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
+#     with open(folder+file, 'r') as fr:
+#         lines = fr.readlines()
+#         for t in range(511):
+#             for i in range(100):
+#                 for j in range(100):
+#                     L[t][-i+99][j]=float(lines[t*10000+i*100+j])
 
-# folder = '_Nostim_ trials with only spontaneous activity, second set of 10 trials/'
-folder = '_Nostim_ trials with only spontaneous activity, first 10 trials/'
-# for i in range(11,21):
-# for i in range(1,11):
-for i in [2]:
-    file = 'Nostim_'+str(i)
+#folder = 'Mouses_3-5-6/20160912/'
+#folder = 'Mouses_3-5-6/20160914/'
+folder = 'Mouses_3-5-6/20160916/'
+for i in range(1,21):
+    file = 'C2_'+str(i)+'.txt'
     L=[[[0 for k in range(100)] for l in range(100)]for i in range(511)]
     with open(folder+file, 'r') as fr:
         lines = fr.readlines()
         for t in range(511):
             for i in range(100):
-                for j in range(100):
-                    L[t][-i+99][j]=float(lines[t*10000+i*100+j])
-
-
+                    L[t][i]=[float(lines[t*100+j].split('\t')[i]) for j in range(100)]
     dt = 1
     run_time = 511
     size = 100
